@@ -9,7 +9,7 @@ export type ColumnsFileEdit = {
     EventInitiator?: (EventInitiator | null);
     EditType: EditType;
     SourceLocation?: (string | null);
-    InsertedText?: (string | null);
-    DeletedText?: (string | null);
+    InsertText?: (string | null);
+    DeleteText?: (string | null);
 };
 

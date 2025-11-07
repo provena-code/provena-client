@@ -48,7 +48,7 @@ export type MainTableEvent = {
     InterventionCategory?: (InterventionCategory | null);
     InterventionType?: (string | null);
     InterventionMessage?: (string | null);
-    InsertedText?: (string | null);
-    DeletedText?: (string | null);
+    InsertText?: (string | null);
+    DeleteText?: (string | null);
 };
 
