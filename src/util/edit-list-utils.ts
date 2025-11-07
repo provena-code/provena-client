@@ -30,5 +30,5 @@ export function createEditList(events: Event[]) {
         });
     }
 
-    return builder.editList.getEdits();
+    return [...builder.editList.getEdits()];
 }

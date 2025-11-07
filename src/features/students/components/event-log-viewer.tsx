@@ -2,6 +2,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { DefaultService } from '@/api';
 import { createEditList } from '@/util/edit-list-utils';
+import CodeViewer from './code-viewer'; // Import the new CodeViewer component
 
 interface EventLogViewerProps {
   assignmentId: string;
@@ -17,7 +18,6 @@ export default function EventLogViewer({ assignmentId, studentId, file }: EventL
   });
 
   const processedEditList = eventLogs ? createEditList(eventLogs) : null;
-  console.log(processedEditList);
 
   return (
     <div className="w-3/4 p-4">
@@ -25,9 +25,7 @@ export default function EventLogViewer({ assignmentId, studentId, file }: EventL
       {isLoading && <div>Loading event logs...</div>}
       {isError && <div>Error fetching event logs.</div>}
       {processedEditList && (
-        <pre className="bg-gray-100 p-4 rounded overflow-auto text-sm">
-          <code>{JSON.stringify(eventLogs, null, 2)}</code>
-        </pre>
+        <CodeViewer edits={processedEditList} />
       )}
     </div>
   );
