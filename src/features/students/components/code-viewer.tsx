@@ -1,4 +1,3 @@
-import React from 'react';
 import type { EditRange } from 'provena';
 import { Author } from 'provena';
 

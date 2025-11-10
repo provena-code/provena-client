@@ -8,6 +8,7 @@ export function createEditList(events: Event[]) {
     const builder = new EditListBuilder(new EditList());
 
     let first = true;
+    const history = [];
     for (const event of events) {
         // parse event.ServerTimestamp as ISO string
         const time = new Date(event.ServerTimestamp!).getTime();
@@ -28,7 +29,9 @@ export function createEditList(events: Event[]) {
                 rangeLength: deletedLength,
             }]
         });
+
+        history.push([...builder.editList.getEdits()]);
     }
 
-    return [...builder.editList.getEdits()];
+    return history;
 }

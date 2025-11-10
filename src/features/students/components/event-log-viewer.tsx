@@ -1,8 +1,7 @@
-import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { DefaultService } from '@/api';
 import { createEditList } from '@/util/edit-list-utils';
-import CodeViewer from './code-viewer'; // Import the new CodeViewer component
+import CodeHistoryPlayer from './code-history-player';
 
 interface EventLogViewerProps {
   assignmentId: string;
@@ -21,11 +20,14 @@ export default function EventLogViewer({ assignmentId, studentId, file }: EventL
 
   return (
     <div className="w-3/4 p-4">
-      <h3 className="text-lg font-semibold mb-2">Processed Edit List for {file}</h3>
+      <h3 className="text-lg font-semibold mb-2">Code History for {file}</h3>
       {isLoading && <div>Loading event logs...</div>}
       {isError && <div>Error fetching event logs.</div>}
-      {processedEditList && (
-        <CodeViewer edits={processedEditList} />
+      {processedEditList && processedEditList.length > 0 && (
+        <CodeHistoryPlayer codeHistory={processedEditList} />
+      )}
+      {processedEditList && processedEditList.length === 0 && (
+        <div>No code history found for this file.</div>
       )}
     </div>
   );
