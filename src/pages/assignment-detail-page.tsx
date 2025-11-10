@@ -13,9 +13,6 @@ export default function AssignmentDetailPage() {
 
   return (
     <div>
-      <h2 className="text-xl font-semibold">Assignment Details</h2>
-      <p className="mt-2 mb-4">Viewing details for assignment: {assignmentId}</p>
-
       <h3 className="text-lg font-semibold">Students</h3>
       {isLoading && <div>Loading students...</div>}
       {isError && <div>Error fetching students.</div>}

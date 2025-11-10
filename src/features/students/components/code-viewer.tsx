@@ -27,7 +27,7 @@ const CodeViewer = forwardRef<HTMLSpanElement, CodeViewerProps>(({ frame }, ref)
 
   const renderSpans = () => {
     let currentOffset = 0;
-    return edits.flatMap((edit, index) => {
+    return edits.map((edit, index) => {
       const authorId = edit.metadata.author;
       const className = authorColorMap[authorId] || authorColorMap[Author.Unknown];
       const titleText = JSON.stringify(edit.metadata, null, 2);
@@ -45,15 +45,17 @@ const CodeViewer = forwardRef<HTMLSpanElement, CodeViewerProps>(({ frame }, ref)
 
         const spans = [];
         if (beforeText) {
-          spans.push(<span>{beforeText}</span>);
+          spans.push(<span key={`before-${index}`}>{beforeText}</span>);
         }
+
         spans.push(<span
             ref={ref}
             className={`highlight-fade-bg`}
             key={`${animationKey}-${index}`}
         >{highlightedText}</span>);
+
         if (afterText) {
-          spans.push(<span>{afterText}</span>);
+          spans.push(<span key={`after-${index}`}>{afterText}</span>);
         }
         return <span key={index} className={`inline ${className} border-b border-gray-300`} title={titleText}>
           {spans}

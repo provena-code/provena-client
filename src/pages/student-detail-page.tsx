@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { DefaultService } from '@/api';
 import FileList from '@/features/students/components/file-list';
@@ -38,9 +38,6 @@ export default function StudentDetailPage() {
 
   return (
     <div className="p-4">
-      <h2 className="text-xl font-semibold">Student Details</h2>
-      <p className="mt-2">Assignment: {assignmentId}</p>
-      <p className="mb-4">Student: {studentId}</p>
       <div className="flex border border-gray-300 rounded-md h-full">
         <div className="w-1/4 border-r border-gray-300 flex flex-col">
           {isLoadingFiles && <div className="p-4">Loading file list...</div>}
