@@ -1,15 +1,18 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { DefaultService } from '@/api';
+import { DefaultService, type MainTableEvent } from '@/api';
 import FileList from '@/features/students/components/file-list';
 import EventLogViewer from '@/features/students/components/event-log-viewer';
 import EventDetailViewer from '@/features/students/components/event-detail-viewer';
+import MetadataViewer from '@/features/students/components/metadata-viewer';
+import { Metadata } from 'provena';
 
 export default function StudentDetailPage() {
   const { assignmentId, studentId } = useParams<{ assignmentId: string; studentId: string }>();
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [currentFrame, setCurrentFrame] = useState<number | null>(null);
+  const [hoveredMetadata, setHoveredMetadata] = useState<Metadata | null>(null);
 
   const { data: files, isLoading: isLoadingFiles, isError: isErrorFiles } = useQuery({
     queryKey: ['files', assignmentId, studentId],
@@ -31,7 +34,8 @@ export default function StudentDetailPage() {
 
   const handleFileSelect = (file: string) => {
     setSelectedFile(file);
-    setCurrentFrame(null); // Reset frame selection on new file
+    setCurrentFrame(null);
+    setHoveredMetadata(null);
   };
 
   const currentEvent = eventLogs && currentFrame !== null ? eventLogs[currentFrame] : null;
@@ -48,6 +52,7 @@ export default function StudentDetailPage() {
             <div className="p-4">No files found.</div>
           )}
           <EventDetailViewer event={currentEvent} />
+          <MetadataViewer metadata={hoveredMetadata} />
         </div>
 
         {selectedFile ? (
@@ -59,6 +64,7 @@ export default function StudentDetailPage() {
                 eventLogs={eventLogs}
                 file={selectedFile}
                 onScrub={setCurrentFrame}
+                onMetadataHover={setHoveredMetadata}
               />
             )}
           </>

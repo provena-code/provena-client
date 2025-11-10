@@ -5,13 +5,15 @@ import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Play, Pause, SkipBack, SkipForward } from 'lucide-react';
 import { EditHistoryFrame } from '@/util/edit-list-utils';
+import { Metadata } from 'provena';
 
 interface CodeHistoryPlayerProps {
   codeHistory: EditHistoryFrame[];
   onScrub?: (frameIndex: number) => void;
+  onMetadataHover: (metadata: Metadata | null) => void;
 }
 
-export default function CodeHistoryPlayer({ codeHistory, onScrub }: CodeHistoryPlayerProps) {
+export default function CodeHistoryPlayer({ codeHistory, onScrub, onMetadataHover }: CodeHistoryPlayerProps) {
   const [currentFrame, setCurrentFrame] = useState(codeHistory.length - 1);
   const [isPlaying, setIsPlaying] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -98,7 +100,7 @@ export default function CodeHistoryPlayer({ codeHistory, onScrub }: CodeHistoryP
   return (
     <div className="flex flex-col gap-4 h-full">
       <div ref={scrollContainerRef} className="flex-grow overflow-y-auto border rounded h-[70vh]">
-        <CodeViewer ref={highlightRef} frame={currentFrameData} />
+        <CodeViewer ref={highlightRef} frame={currentFrameData} onMetadataHover={onMetadataHover} />
       </div>
       <div className="flex items-center gap-4 p-4 border rounded-lg bg-gray-50">
         <Button onClick={handlePlayPause} variant="outline" size="icon">
