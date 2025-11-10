@@ -1,4 +1,4 @@
-import { Author, Metadata } from 'provena';
+import { Author } from 'provena';
 import { EditHistoryFrame } from '@/util/edit-list-utils';
 import { forwardRef, useEffect, useState } from 'react';
 
@@ -15,14 +15,8 @@ const authorColorMap: { [key in Author]?: string } = {
   [Author.Unknown]: 'bg-red-200',
 };
 
-const highlightColorMap = {
-  replacement: 'rgba(252, 211, 77, 0.5)', // yellow-400/50
-  insertion: 'rgba(74, 222, 128, 0.5)',   // green-400/50
-  deletion: 'rgba(248, 113, 113, 0.5)',    // red-400/50
-};
-
 const CodeViewer = forwardRef<HTMLSpanElement, CodeViewerProps>(({ frame }, ref) => {
-  const { edits, editedRange, wasInsertion, wasDeletion } = frame;
+  const { edits, editedRange } = frame;
   const [animationKey, setAnimationKey] = useState(0);
 
   // By changing the key of the highlight span, we force React to create a new
@@ -31,41 +25,12 @@ const CodeViewer = forwardRef<HTMLSpanElement, CodeViewerProps>(({ frame }, ref)
     setAnimationKey(prev => prev + 1);
   }, [frame]);
 
-  let highlightColor = '';
-  if (wasInsertion && wasDeletion) {
-    highlightColor = highlightColorMap.replacement;
-  } else if (wasInsertion) {
-    highlightColor = highlightColorMap.insertion;
-  } else if (wasDeletion) {
-    highlightColor = highlightColorMap.deletion;
-  }
-
-  const createSpan = (text: string, metadata: Metadata, isHighlighted: boolean, index: number) => {
-    const authorId = metadata.author;
-    const className = authorColorMap[authorId] || authorColorMap[Author.Unknown];
-    const titleText = JSON.stringify(metadata, null, 2);
-    if (isHighlighted) {
-      return <span
-        ref={ref}
-        className={`highlight-fade-bg inline ${className} border-b border-gray-300`}
-        style={{ '--highlight-color': highlightColor } as React.CSSProperties}
-        key={animationKey}
-        title={titleText}
-      >
-        {text}
-      </span>
-    }
-    return (
-      <span key={index} className={`inline ${className} border-b border-gray-300`} title={titleText}>
-        {text}
-      </span>
-    );
-  };
-
   const renderSpans = () => {
     let currentOffset = 0;
-    let index = 0;
-    return edits.flatMap((edit) => {
+    return edits.flatMap((edit, index) => {
+      const authorId = edit.metadata.author;
+      const className = authorColorMap[authorId] || authorColorMap[Author.Unknown];
+      const titleText = JSON.stringify(edit.metadata, null, 2);
       const start = currentOffset;
       const end = start + edit.text.length;
       currentOffset = end;
@@ -80,16 +45,24 @@ const CodeViewer = forwardRef<HTMLSpanElement, CodeViewerProps>(({ frame }, ref)
 
         const spans = [];
         if (beforeText) {
-          spans.push(createSpan(beforeText, edit.metadata, false, index++));
+          spans.push(<span>{beforeText}</span>);
         }
-        spans.push(createSpan(highlightedText, edit.metadata, true, index++));
+        spans.push(<span
+            ref={ref}
+            className={`highlight-fade-bg`}
+            key={`${animationKey}-${index}`}
+        >{highlightedText}</span>);
         if (afterText) {
-          spans.push(createSpan(afterText, edit.metadata, false, index++));
+          spans.push(<span>{afterText}</span>);
         }
-        return spans;
+        return <span key={index} className={`inline ${className} border-b border-gray-300`} title={titleText}>
+          {spans}
+        </span>;
       }
 
-      return [createSpan(edit.text, edit.metadata, false, index++)];
+      return <span key={index} className={`inline ${className} border-b border-gray-300`} title={titleText}>
+        {edit.text}
+      </span>
     });
   };
 

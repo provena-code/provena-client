@@ -2,13 +2,16 @@
 
 @keyframes fade-bg-color {
   from {
-    background-color: var(--highlight-color) !important;
+    background-color: rgb(255, 239, 58);
   }
   to {
-    background-color: transparent !important;
+    background-color: var(--base-color);
+    text-decoration-color: transparent;
   }
 }
 
 .highlight-fade-bg {
   animation: fade-bg-color 1s forwards;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
 }
