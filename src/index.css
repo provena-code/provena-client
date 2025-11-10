@@ -1,2 +1,15 @@
-/* Tailwind CSS v4 one-line import */
 @import "tailwindcss";
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.highlight-fade-out {
+  /* Start with a slight delay to ensure visibility before fading */
+  animation: fade-out 0.5s ease-out 0.1s forwards;
+}

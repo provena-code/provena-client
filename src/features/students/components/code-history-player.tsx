@@ -15,22 +15,20 @@ export default function CodeHistoryPlayer({ codeHistory, onScrub }: CodeHistoryP
   const [currentFrame, setCurrentFrame] = useState(codeHistory.length - 1);
   const [isPlaying, setIsPlaying] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const scrollPosRef = useRef(0);
+  const highlightRef = useRef<HTMLSpanElement>(null);
   const holdTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     onScrub?.(currentFrame);
   }, [currentFrame, onScrub]);
 
-  const updateScrollPosition = () => {
-    if (scrollContainerRef.current) {
-      scrollPosRef.current = scrollContainerRef.current.scrollTop;
-    }
-  };
-
   useLayoutEffect(() => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollTop = scrollPosRef.current;
+    if (highlightRef.current) {
+      highlightRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'nearest',
+      });
     }
   }, [currentFrame]);
 
@@ -43,7 +41,6 @@ export default function CodeHistoryPlayer({ codeHistory, onScrub }: CodeHistoryP
       }
 
       const timer = setInterval(() => {
-        updateScrollPosition();
         setCurrentFrame((prevFrame) => {
           if (prevFrame < codeHistory.length - 1) {
             return prevFrame + 1;
@@ -58,7 +55,6 @@ export default function CodeHistoryPlayer({ codeHistory, onScrub }: CodeHistoryP
   }, [isPlaying, currentFrame, codeHistory.length]);
 
   const handlePlayPause = () => {
-    updateScrollPosition();
     if (isPlaying) {
       setIsPlaying(false);
     } else {
@@ -70,7 +66,6 @@ export default function CodeHistoryPlayer({ codeHistory, onScrub }: CodeHistoryP
   };
 
   const changeFrame = (direction: 'next' | 'prev') => {
-    updateScrollPosition();
     setCurrentFrame((prev) => {
       if (direction === 'next') {
         return Math.min(codeHistory.length - 1, prev + 1);
@@ -94,17 +89,17 @@ export default function CodeHistoryPlayer({ codeHistory, onScrub }: CodeHistoryP
   };
 
   const handleSliderChange = (value: number[]) => {
-    updateScrollPosition();
     setIsPlaying(false);
     setCurrentFrame(value[0]);
   };
 
-  const currentEdits = codeHistory[currentFrame];
+  const currentFrameData = codeHistory[currentFrame];
+  console.log('Rendering frame', currentFrame, currentFrameData);
 
   return (
     <div className="flex flex-col gap-4 h-full">
       <div ref={scrollContainerRef} className="flex-grow overflow-y-auto border rounded h-[70vh]">
-        <CodeViewer frame={currentEdits} />
+        <CodeViewer ref={highlightRef} frame={currentFrameData} />
       </div>
       <div className="flex items-center gap-4 p-4 border rounded-lg bg-gray-50">
         <Button onClick={handlePlayPause} variant="outline" size="icon">

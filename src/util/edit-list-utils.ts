@@ -7,6 +7,8 @@ type Event = MainTableEvent;
 export type EditHistoryFrame = {
     edits: EditRange[];
     editedRange: { start: number; end: number } | null;
+    wasInsertion: boolean;
+    wasDeletion: boolean;
 }
 
 export function createEditList(events: Event[]): EditHistoryFrame[] {
@@ -44,7 +46,9 @@ export function createEditList(events: Event[]): EditHistoryFrame[] {
 
         history.push({
             edits: builder.editList.copyEdits(),
-            editedRange: editedRange
+            editedRange: editedRange,
+            wasInsertion: insertedText.length > 0,
+            wasDeletion: deletedLength > 0,
         });
     }
 
