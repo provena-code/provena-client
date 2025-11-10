@@ -1,8 +1,8 @@
-import type { EditRange } from 'provena';
+import { EditHistoryFrame } from '@/util/edit-list-utils';
 import { Author } from 'provena';
 
 interface CodeViewerProps {
-  edits: EditRange[];
+  frame: EditHistoryFrame;
 }
 
 // Simple mapping for Author enum values to CSS classes for styling
@@ -15,10 +15,10 @@ const authorColorMap: { [key in Author]?: string } = {
   [Author.Unknown]: 'bg-red-200',
 };
 
-export default function CodeViewer({ edits }: CodeViewerProps) {
+export default function CodeViewer({ frame }: CodeViewerProps) {
   return (
     <div className="font-mono text-sm whitespace-pre-wrap p-2 border rounded bg-white">
-      {edits.map((edit, index) => {
+      {frame && frame.edits.map((edit, index) => {
         const authorId = edit.metadata.author; // Assuming author is an Author enum value
         const className = authorColorMap[authorId] || authorColorMap[Author.Unknown];
         const titleText = JSON.stringify(edit.metadata, null, 2);

@@ -1,13 +1,13 @@
 
 import { useState, useEffect, useRef, useLayoutEffect } from 'react';
-import type { EditRange } from 'provena';
 import CodeViewer from './code-viewer';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Play, Pause, SkipBack, SkipForward } from 'lucide-react';
+import { EditHistoryFrame } from '@/util/edit-list-utils';
 
 interface CodeHistoryPlayerProps {
-  codeHistory: EditRange[][];
+  codeHistory: EditHistoryFrame[];
   onScrub?: (frameIndex: number) => void;
 }
 
@@ -104,7 +104,7 @@ export default function CodeHistoryPlayer({ codeHistory, onScrub }: CodeHistoryP
   return (
     <div className="flex flex-col gap-4 h-full">
       <div ref={scrollContainerRef} className="flex-grow overflow-y-auto border rounded h-[70vh]">
-        <CodeViewer edits={currentEdits} />
+        <CodeViewer frame={currentEdits} />
       </div>
       <div className="flex items-center gap-4 p-4 border rounded-lg bg-gray-50">
         <Button onClick={handlePlayPause} variant="outline" size="icon">
