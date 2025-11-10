@@ -1,32 +1,23 @@
-import { useQuery } from '@tanstack/react-query';
-import { DefaultService } from '@/api';
+import { useMemo } from 'react';
 import { createEditList } from '@/util/edit-list-utils';
 import CodeHistoryPlayer from './code-history-player';
+import { MainTableEvent } from '@/api';
 
 interface EventLogViewerProps {
-  assignmentId: string;
-  studentId: string;
+  eventLogs: MainTableEvent[];
   file: string;
+  onScrub: (frameIndex: number) => void;
 }
 
-export default function EventLogViewer({ assignmentId, studentId, file }: EventLogViewerProps) {
-  const { data: eventLogs, isLoading, isError } = useQuery({
-    queryKey: ['eventLogs', assignmentId, studentId, file],
-    queryFn: () => DefaultService.getStudentEditsReadSubjectIdAssignmentIdCodestateSectionEditsGet(studentId, assignmentId, file),
-    enabled: !!(assignmentId && studentId && file),
-  });
-
-  const processedEditList = eventLogs ? createEditList(eventLogs) : null;
+export default function EventLogViewer({ eventLogs, file, onScrub }: EventLogViewerProps) {
+  const processedEditList = useMemo(() => createEditList(eventLogs), [eventLogs]);
 
   return (
-    <div className="w-3/4 p-4">
+    <div className="w-3/4 p-4 h-full flex flex-col">
       <h3 className="text-lg font-semibold mb-2">Code History for {file}</h3>
-      {isLoading && <div>Loading event logs...</div>}
-      {isError && <div>Error fetching event logs.</div>}
-      {processedEditList && processedEditList.length > 0 && (
-        <CodeHistoryPlayer codeHistory={processedEditList} />
-      )}
-      {processedEditList && processedEditList.length === 0 && (
+      {processedEditList && processedEditList.length > 0 ? (
+        <CodeHistoryPlayer codeHistory={processedEditList} onScrub={onScrub} />
+      ) : (
         <div>No code history found for this file.</div>
       )}
     </div>

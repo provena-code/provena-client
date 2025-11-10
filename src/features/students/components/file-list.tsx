@@ -7,7 +7,7 @@ interface FileListProps {
 
 export default function FileList({ files, selectedFile, onSelectFile }: FileListProps) {
   return (
-    <div className="w-1/4 border-r border-gray-300 p-4">
+    <div className="border-r border-gray-300 p-4">
       <h3 className="text-lg font-semibold mb-2">Files</h3>
       <ul>
         {files.map((file) => (

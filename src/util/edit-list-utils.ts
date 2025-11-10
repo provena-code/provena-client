@@ -16,6 +16,7 @@ export function createEditList(events: Event[]) {
         const deletedLength = (event.DeleteText || '').length;
         if (first && insertedText.length > 1) {
             builder.editList.setInitialText(insertedText, time);
+            history.push(builder.editList.getEdits(true));
             continue;
         }
         first = false;
@@ -30,7 +31,7 @@ export function createEditList(events: Event[]) {
             }]
         });
 
-        history.push([...builder.editList.getEdits()]);
+        history.push(builder.editList.getEdits(true));
     }
 
     return history;

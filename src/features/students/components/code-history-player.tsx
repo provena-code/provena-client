@@ -8,14 +8,19 @@ import { Play, Pause, SkipBack, SkipForward } from 'lucide-react';
 
 interface CodeHistoryPlayerProps {
   codeHistory: EditRange[][];
+  onScrub?: (frameIndex: number) => void;
 }
 
-export default function CodeHistoryPlayer({ codeHistory }: CodeHistoryPlayerProps) {
+export default function CodeHistoryPlayer({ codeHistory, onScrub }: CodeHistoryPlayerProps) {
   const [currentFrame, setCurrentFrame] = useState(codeHistory.length - 1);
   const [isPlaying, setIsPlaying] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const scrollPosRef = useRef(0);
   const holdTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    onScrub?.(currentFrame);
+  }, [currentFrame, onScrub]);
 
   const updateScrollPosition = () => {
     if (scrollContainerRef.current) {
@@ -97,8 +102,8 @@ export default function CodeHistoryPlayer({ codeHistory }: CodeHistoryPlayerProp
   const currentEdits = codeHistory[currentFrame];
 
   return (
-    <div className="flex flex-col gap-4">
-      <div ref={scrollContainerRef} className="h-96 overflow-y-auto border rounded">
+    <div className="flex flex-col gap-4 h-full">
+      <div ref={scrollContainerRef} className="flex-grow overflow-y-auto border rounded h-[70vh]">
         <CodeViewer edits={currentEdits} />
       </div>
       <div className="flex items-center gap-4 p-4 border rounded-lg bg-gray-50">
