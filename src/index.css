@@ -1,15 +1,14 @@
 @import "tailwindcss";
 
-@keyframes fade-out {
+@keyframes fade-bg-color {
   from {
-    opacity: 1;
+    background-color: var(--highlight-color) !important;
   }
   to {
-    opacity: 0;
+    background-color: transparent !important;
   }
 }
 
-.highlight-fade-out {
-  /* Start with a slight delay to ensure visibility before fading */
-  animation: fade-out 0.5s ease-out 0.1s forwards;
+.highlight-fade-bg {
+  animation: fade-bg-color 1s forwards;
 }

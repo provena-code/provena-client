@@ -94,7 +94,6 @@ export default function CodeHistoryPlayer({ codeHistory, onScrub }: CodeHistoryP
   };
 
   const currentFrameData = codeHistory[currentFrame];
-  console.log('Rendering frame', currentFrame, currentFrameData);
 
   return (
     <div className="flex flex-col gap-4 h-full">

@@ -1,4 +1,4 @@
-import { Author } from 'provena';
+import { Author, Metadata } from 'provena';
 import { EditHistoryFrame } from '@/util/edit-list-utils';
 import { forwardRef, useEffect, useState } from 'react';
 
@@ -15,91 +15,82 @@ const authorColorMap: { [key in Author]?: string } = {
   [Author.Unknown]: 'bg-red-200',
 };
 
+const highlightColorMap = {
+  replacement: 'rgba(252, 211, 77, 0.5)', // yellow-400/50
+  insertion: 'rgba(74, 222, 128, 0.5)',   // green-400/50
+  deletion: 'rgba(248, 113, 113, 0.5)',    // red-400/50
+};
+
 const CodeViewer = forwardRef<HTMLSpanElement, CodeViewerProps>(({ frame }, ref) => {
   const { edits, editedRange, wasInsertion, wasDeletion } = frame;
-  const [isHighlightVisible, setIsHighlightVisible] = useState(true);
+  const [animationKey, setAnimationKey] = useState(0);
 
-  // Reset highlight on frame change
+  // By changing the key of the highlight span, we force React to create a new
+  // element, which makes the CSS animation re-trigger.
   useEffect(() => {
-    setIsHighlightVisible(true);
-    const timer = setTimeout(() => {
-      setIsHighlightVisible(false);
-    }, 10); // Short delay to allow CSS transition to trigger
-    return () => clearTimeout(timer);
+    setAnimationKey(prev => prev + 1);
   }, [frame]);
 
-  let highlightTypeClass = '';
+  let highlightColor = '';
   if (wasInsertion && wasDeletion) {
-    highlightTypeClass = 'bg-yellow-400/50'; // Replacement
+    highlightColor = highlightColorMap.replacement;
   } else if (wasInsertion) {
-    highlightTypeClass = 'bg-green-400/50'; // Insertion
+    highlightColor = highlightColorMap.insertion;
   } else if (wasDeletion) {
-    highlightTypeClass = 'bg-red-400/50'; // Deletion
+    highlightColor = highlightColorMap.deletion;
   }
 
-  const highlightClasses = `
-    transition-opacity duration-500
-    ${isHighlightVisible ? 'opacity-100' : 'opacity-0'}
-    ${highlightTypeClass}
-  `;
+  const createSpan = (text: string, metadata: Metadata, isHighlighted: boolean, index: number) => {
+    const authorId = metadata.author;
+    const className = authorColorMap[authorId] || authorColorMap[Author.Unknown];
+    const titleText = JSON.stringify(metadata, null, 2);
+    if (isHighlighted) {
+      return <span
+        ref={ref}
+        className={`highlight-fade-bg inline ${className} border-b border-gray-300`}
+        style={{ '--highlight-color': highlightColor } as React.CSSProperties}
+        key={animationKey}
+        title={titleText}
+      >
+        {text}
+      </span>
+    }
+    return (
+      <span key={index} className={`inline ${className} border-b border-gray-300`} title={titleText}>
+        {text}
+      </span>
+    );
+  };
 
   const renderSpans = () => {
     let currentOffset = 0;
-    const spans = edits.map((edit, index) => {
+    let index = 0;
+    return edits.flatMap((edit) => {
       const start = currentOffset;
       const end = start + edit.text.length;
       currentOffset = end;
 
-      const authorId = edit.metadata.author;
-      const className = authorColorMap[authorId] || authorColorMap[Author.Unknown];
-      const titleText = JSON.stringify(edit.metadata, null, 2);
+      // If start and end properly overlap with editedRange...
+      if (editedRange && start < editedRange.end && end > editedRange.start) {
+        const startIndex = Math.max(start, editedRange.start);
+        const endIndex = Math.min(end, editedRange.end);
+        const highlightedText = edit.text.slice(startIndex - start, endIndex - start);
+        const beforeText = edit.text.slice(0, startIndex - start);
+        const afterText = edit.text.slice(endIndex - start);
 
-      return {
-        component: (
-          <span key={index} className={`inline ${className} border-b border-gray-300`} title={titleText}>
-            {edit.text}
-          </span>
-        ),
-        start,
-        end,
-      };
+        const spans = [];
+        if (beforeText) {
+          spans.push(createSpan(beforeText, edit.metadata, false, index++));
+        }
+        spans.push(createSpan(highlightedText, edit.metadata, true, index++));
+        if (afterText) {
+          spans.push(createSpan(afterText, edit.metadata, false, index++));
+        }
+        return spans;
+      }
+
+      return [createSpan(edit.text, edit.metadata, false, index++)];
     });
-
-    if (!editedRange) {
-      return spans.map(s => s.component);
-    }
-
-    const elements = [];
-
-    // Find the start and end spans for the highlight
-    const startSpanIndex = spans.findIndex(s => s.start >= editedRange.start);
-    const endSpanIndex = spans.findIndex(s => s.end >= editedRange.end);
-
-    if (startSpanIndex === -1 || endSpanIndex === -1) {
-        return spans.map(s => s.component);
-    }
-
-    // Add spans before the highlight
-    for (let i = 0; i < startSpanIndex; i++) {
-      elements.push(spans[i].component);
-    }
-
-    // Create the highlighted group
-    const highlightedSpans = spans.slice(startSpanIndex, endSpanIndex + 1);
-    if (highlightedSpans.length > 0) {
-      elements.push(
-        <span ref={ref} className={highlightClasses} key="highlight">
-          {highlightedSpans.map(s => s.component)}
-        </span>
-      );
-    }
-
-    // Add spans after the highlight
-    for (let i = endSpanIndex + 1; i < spans.length; i++) {
-      elements.push(spans[i].component);
-    }
-
-    return elements;
   };
 
   return (
