@@ -17,9 +17,9 @@ export default function AssignmentDetailPage() {
       <h3 className="text-lg font-semibold">Students</h3>
       {isLoading && <div>Loading students...</div>}
       {isError && <div>Error fetching students.</div>}
-      {students && (
+      {students && assignmentId && (
         <div className="mt-2">
-          <StudentsTable students={students} />
+          <StudentsTable students={students} assignmentId={assignmentId} />
         </div>
       )}
     </div>

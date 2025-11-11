@@ -22,19 +22,26 @@ import React from "react"
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
+  getRowId?: (row: TData) => string;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  getRowId,
 }: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = React.useState<SortingState>([])
+
+    // Memoize the data prop
+    const memoizedData = React.useMemo(() => data, [data]);
+
     const table = useReactTable({
-    data,
+    data: memoizedData,
     columns,
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
+    getRowId,
     state: {
         sorting,
     },

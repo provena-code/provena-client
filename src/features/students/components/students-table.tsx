@@ -3,9 +3,10 @@
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table"
 import { AssignmentSubjectsResponseItem } from "@/api"
 import { DataTable } from "@/components/ui/data-table"
-import { Link, useParams } from "react-router-dom"
+import { Link } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { ArrowUpDown } from "lucide-react"
+import React from "react"
 
 // Extend the API type to allow for additional client-side properties
 export type StudentSummary = AssignmentSubjectsResponseItem & {
@@ -14,7 +15,7 @@ export type StudentSummary = AssignmentSubjectsResponseItem & {
 
 const columnHelper = createColumnHelper<StudentSummary>();
 
-const columns: ColumnDef<StudentSummary>[] = [
+const makeColumns = (assignmentId: string): ColumnDef<StudentSummary>[] => [
     columnHelper.accessor("SubjectID", {
         header: ({ column }) => {
             return (
@@ -27,9 +28,7 @@ const columns: ColumnDef<StudentSummary>[] = [
               </Button>
             )
           },
-        cell: ({ row, table }) => {
-            // Annoying that we have to get the assignmentId from the router
-            const { assignmentId } = useParams<{ assignmentId: string }>();
+        cell: ({ row }) => {
             return (
                 <Link
                     to={`/assignment/${assignmentId}/student/${row.original.SubjectID}`}
@@ -70,8 +69,10 @@ const columns: ColumnDef<StudentSummary>[] = [
 
 interface StudentsTableProps {
     students: StudentSummary[];
+    assignmentId: string;
 }
 
-export function StudentsTable({ students }: StudentsTableProps) {
-    return <DataTable columns={columns} data={students} />
-}
+export const StudentsTable = React.memo(({ students, assignmentId }: StudentsTableProps) => {
+    const columns = React.useMemo(() => makeColumns(assignmentId), [assignmentId]);
+    return <DataTable columns={columns} data={students} getRowId={(student) => student.SubjectID} />
+});
