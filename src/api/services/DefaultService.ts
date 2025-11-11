@@ -2,6 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { AssignmentSubjectsResponseItem } from '../models/AssignmentSubjectsResponseItem';
 import type { Body_addEventsWithCodeStates } from '../models/Body_addEventsWithCodeStates';
 import type { ColumnsCompile } from '../models/ColumnsCompile';
 import type { ColumnsCompileError } from '../models/ColumnsCompileError';
@@ -99,12 +100,12 @@ export class DefaultService {
     /**
      * Get Assignments
      * @param assignmentId
-     * @returns any Successful Response
+     * @returns AssignmentSubjectsResponseItem Successful Response
      * @throws ApiError
      */
     public static getAssignmentsReadAssignmentsAssignmentIdSubjectsGet(
         assignmentId: string,
-    ): CancelablePromise<any> {
+    ): CancelablePromise<Array<AssignmentSubjectsResponseItem>> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/read/assignments/{assignment_id}/subjects',

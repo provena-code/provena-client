@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { DefaultService } from '@/api';
+import { StudentsTable } from '@/features/students/components/students-table';
 
 export default function AssignmentDetailPage() {
   const { assignmentId } = useParams<{ assignmentId: string }>();
@@ -17,18 +18,9 @@ export default function AssignmentDetailPage() {
       {isLoading && <div>Loading students...</div>}
       {isError && <div>Error fetching students.</div>}
       {students && (
-        <ul className="mt-2">
-          {Array.isArray(students) && students.map((studentId: string) => (
-            <li key={studentId}>
-              <Link
-                to={`/assignment/${assignmentId}/student/${studentId}`}
-                className="text-blue-500 hover:underline"
-              >
-                {studentId}
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <div className="mt-2">
+          <StudentsTable students={students} />
+        </div>
       )}
     </div>
   );
