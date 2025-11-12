@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { DefaultService, type MainTableEvent } from '@/api';
+import { DefaultService } from '@/api';
 import FileList from '@/features/students/components/file-list';
 import EventLogViewer from '@/features/students/components/event-log-viewer';
 import EventDetailViewer from '@/features/students/components/event-detail-viewer';

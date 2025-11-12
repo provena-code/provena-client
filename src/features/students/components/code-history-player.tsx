@@ -98,7 +98,7 @@ export default function CodeHistoryPlayer({ codeHistory, onScrub, onMetadataHove
 
   return (
     <div className="flex flex-col gap-4 h-full">
-      <div ref={scrollContainerRef} className="flex-grow overflow-y-auto border rounded h-[70vh]">
+      <div ref={scrollContainerRef} className="flex-grow overflow-y-auto border rounded h-[60vh]">
         <CodeViewer ref={highlightRef} frame={currentFrameData} onMetadataHover={onMetadataHover} />
       </div>
       <div className="flex items-center gap-4 p-4 border rounded-lg bg-gray-50">
