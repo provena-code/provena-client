@@ -7,8 +7,8 @@ interface CodeViewerProps {
 }
 
 const authorColorMap: { [key in Author]?: string } = {
-  [Author.User]: 'bg-blue-200',
-  [Author.System]: 'bg-green-200',
+  [Author.User]: 'bg-green-200',
+  [Author.System]: 'bg-yellow-200',
   [Author.ExistingText]: 'bg-gray-300',
   [Author.ExternalPaste]: 'bg-purple-200',
   [Author.ExternalEdit]: 'bg-orange-200',
