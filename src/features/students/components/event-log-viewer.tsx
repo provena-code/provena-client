@@ -1,18 +1,17 @@
 import { useMemo } from 'react';
-import { createEditList } from '@/util/edit-list-utils';
+import { PS2 } from 'provena';
 import CodeHistoryPlayer from './code-history-player';
-import { MainTableEvent } from '@/api';
 import { Metadata } from 'provena';
 
 interface EventLogViewerProps {
-  eventLogs: MainTableEvent[];
+  eventLogs: PS2.MainTableRow[];
   file: string;
   onScrub: (frameIndex: number) => void;
   onMetadataHover: (metadata: Metadata | null) => void;
 }
 
 export default function EventLogViewer({ eventLogs, file, onScrub, onMetadataHover }: EventLogViewerProps) {
-  const processedEditList = useMemo(() => createEditList(eventLogs), [eventLogs]);
+  const processedEditList = useMemo(() => PS2.createEditHistory(eventLogs), [eventLogs]);
 
   return (
     <div className="w-3/4 p-4 h-full flex flex-col">

@@ -1,19 +1,18 @@
-import { Author, Metadata } from 'provena';
-import { EditHistoryFrame } from '@/util/edit-list-utils';
+import { Author, Metadata, PS2 } from 'provena';
 import { forwardRef, useEffect, useState } from 'react';
 
 interface CodeViewerProps {
-  frame: EditHistoryFrame;
+  frame: PS2.EditHistoryFrame;
   onMetadataHover: (metadata: Metadata | null) => void;
 }
 
 const authorColorMap: { [key in Author]?: string } = {
-  [Author.User]: 'bg-blue-200',
-  [Author.System]: 'bg-green-200',
-  [Author.ExistingText]: 'bg-gray-300',
-  [Author.ExternalPaste]: 'bg-purple-200',
+  [Author.User]: 'bg-green-200',
+  [Author.System]: 'bg-yellow-200',
+  [Author.ExistingText]: '',
+  [Author.ExternalPaste]: 'bg-red-200',
   [Author.ExternalEdit]: 'bg-orange-200',
-  [Author.Unknown]: 'bg-red-200',
+  [Author.Unknown]: 'bg-gray-200',
 };
 
 const highlightColorMap = {

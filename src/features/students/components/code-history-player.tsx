@@ -4,11 +4,10 @@ import CodeViewer from './code-viewer';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Play, Pause, SkipBack, SkipForward } from 'lucide-react';
-import { EditHistoryFrame } from '@/util/edit-list-utils';
-import { Metadata } from 'provena';
+import { Metadata, PS2 } from 'provena';
 
 interface CodeHistoryPlayerProps {
-  codeHistory: EditHistoryFrame[];
+  codeHistory: PS2.EditHistoryFrame[];
   onScrub?: (frameIndex: number) => void;
   onMetadataHover: (metadata: Metadata | null) => void;
 }
@@ -50,7 +49,7 @@ export default function CodeHistoryPlayer({ codeHistory, onScrub, onMetadataHove
           setIsPlaying(false);
           return prevFrame;
         });
-      }, 200);
+      }, 30);
 
       return () => clearInterval(timer);
     }
