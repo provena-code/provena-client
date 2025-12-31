@@ -16,7 +16,7 @@ const authorColorMap: { [key in Author]?: string } = {
 };
 
 const CodeViewer = forwardRef<HTMLSpanElement, CodeViewerProps>(({ frame, onMetadataHover }, ref) => {
-  const { edits, editedRange } = frame;
+  const { edits, editedRanges } = frame;
   const [animationKey, setAnimationKey] = useState(0);
 
   // By changing the key of the highlight span, we force React to create a new
@@ -40,31 +40,34 @@ const CodeViewer = forwardRef<HTMLSpanElement, CodeViewerProps>(({ frame, onMeta
         onMouseLeave: () => onMetadataHover(null),
       }
 
-      // If start and end properly overlap with editedRange...
-      if (editedRange && start < editedRange.end && end > editedRange.start) {
-        const startIndex = Math.max(start, editedRange.start);
-        const endIndex = Math.min(end, editedRange.end);
-        const highlightedText = edit.text.slice(startIndex - start, endIndex - start);
-        const beforeText = edit.text.slice(0, startIndex - start);
-        const afterText = edit.text.slice(endIndex - start);
+      // TODO: Figure out how to handle multi-range edits
+      for (const editedRange of editedRanges) {
+        // If start and end properly overlap with editedRange...
+        if (editedRange && start < editedRange.end && end > editedRange.start) {
+          const startIndex = Math.max(start, editedRange.start);
+          const endIndex = Math.min(end, editedRange.end);
+          const highlightedText = edit.text.slice(startIndex - start, endIndex - start);
+          const beforeText = edit.text.slice(0, startIndex - start);
+          const afterText = edit.text.slice(endIndex - start);
 
-        const spans = [];
-        if (beforeText) {
-          spans.push(<span key={`before-${index}`}>{beforeText}</span>);
+          const spans = [];
+          if (beforeText) {
+            spans.push(<span key={`before-${index}`}>{beforeText}</span>);
+          }
+
+          spans.push(<span
+              ref={ref}
+              className={`highlight-fade-bg`}
+              key={`${animationKey}-${index}`}
+          >{highlightedText}</span>);
+
+          if (afterText) {
+            spans.push(<span key={`after-${index}`}>{afterText}</span>);
+          }
+          return <span {...spanProps} className={`inline ${className} border-b border-gray-300`}>
+            {spans}
+          </span>;
         }
-
-        spans.push(<span
-            ref={ref}
-            className={`highlight-fade-bg`}
-            key={`${animationKey}-${index}`}
-        >{highlightedText}</span>);
-
-        if (afterText) {
-          spans.push(<span key={`after-${index}`}>{afterText}</span>);
-        }
-        return <span {...spanProps} className={`inline ${className} border-b border-gray-300`}>
-          {spans}
-        </span>;
       }
 
       return <span {...spanProps} className={`inline ${className} border-b border-gray-300`}>
