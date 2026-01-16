@@ -2,9 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { EventInitiator } from './EventInitiator';
-export type ColumnsFileClose = {
+export type CodeStateSection = {
     CodeStateSection: string;
-    EventInitiator?: (EventInitiator | null);
+    Code: string;
 };
 
