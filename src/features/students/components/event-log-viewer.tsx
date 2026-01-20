@@ -2,9 +2,10 @@ import { useMemo } from 'react';
 import { PS2 } from 'provena';
 import CodeHistoryPlayer from './code-history-player';
 import { Metadata } from 'provena';
+import { MainTableEvent } from 'core/src/progsnap/PS2EventTypes';
 
 interface EventLogViewerProps {
-  eventLogs: PS2.MainTableRow[];
+  eventLogs: MainTableEvent[];
   file: string;
   onScrub: (frameIndex: number) => void;
   onMetadataHover: (metadata: Metadata | null) => void;

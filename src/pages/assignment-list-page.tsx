@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 export default function AssignmentListPage() {
   const { data: assignments, isLoading, isError } = useQuery({
     queryKey: ['assignments'],
-    queryFn: () => DefaultService.getAssignmentsReadAssignmentsGet(),
+    queryFn: () => DefaultService.getAssignmentIDs(),
   });
 
   if (isLoading) return <div>Loading assignments...</div>;

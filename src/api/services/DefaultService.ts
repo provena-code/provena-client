@@ -78,19 +78,19 @@ export class DefaultService {
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static getAssignmentsReadAssignmentsGet(): CancelablePromise<any> {
+    public static getAssignmentIDs(): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/read/assignments',
         });
     }
     /**
-     * Get Assignments
+     * Get Subject Stats For Assignment
      * @param assignmentId
      * @returns AssignmentSubjectsResponseItem Successful Response
      * @throws ApiError
      */
-    public static getAssignmentsReadAssignmentsAssignmentIdSubjectsGet(
+    public static getSubjectStatsForAssignment(
         assignmentId: string,
     ): CancelablePromise<Array<AssignmentSubjectsResponseItem>> {
         return __request(OpenAPI, {
@@ -105,13 +105,13 @@ export class DefaultService {
         });
     }
     /**
-     * Get Assignments
+     * Get Code State Sections For Assignment Subject
      * @param assignmentId
      * @param subjectId
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static getAssignmentsReadAssignmentsAssignmentIdSubjectIdCodeStateSectionsGet(
+    public static getCodeStateSectionsForAssignmentSubject(
         assignmentId: string,
         subjectId: string,
     ): CancelablePromise<any> {
@@ -150,22 +150,19 @@ export class DefaultService {
     /**
      * Get Student Edits
      * @param subjectId
-     * @param assignmentId
      * @param codestateSection
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static getStudentEditsReadSubjectIdAssignmentIdCodestateSectionEditsGet(
+    public static getFileEdits(
         subjectId: string,
-        assignmentId: string,
         codestateSection: string,
     ): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/read/{subject_id}/{assignment_id}/{codestate_section}/edits',
+            url: '/read/{subject_id}/{codestate_section}/edits',
             path: {
                 'subject_id': subjectId,
-                'assignment_id': assignmentId,
                 'codestate_section': codestateSection,
             },
             errors: {
@@ -188,6 +185,37 @@ export class DefaultService {
             url: '/read/sessions/{session_id}/last_synced_order',
             path: {
                 'session_id': sessionId,
+            },
+            errors: {
+                422: `Validation Error`,
+            },
+        });
+    }
+    /**
+     * Get Subjects
+     * @returns any Successful Response
+     * @throws ApiError
+     */
+    public static getSubjectIDs(): CancelablePromise<any> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/read/subjects',
+        });
+    }
+    /**
+     * Get Codestates For Subject
+     * @param subjectId
+     * @returns any Successful Response
+     * @throws ApiError
+     */
+    public static getCodeStateSectionsForSubject(
+        subjectId: string,
+    ): CancelablePromise<any> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/read/subjects/{subject_id}/codestate_sections',
+            path: {
+                'subject_id': subjectId,
             },
             errors: {
                 422: `Validation Error`,

@@ -16,13 +16,13 @@ export default function StudentDetailPage() {
 
   const { data: files, isLoading: isLoadingFiles, isError: isErrorFiles } = useQuery({
     queryKey: ['files', assignmentId, studentId],
-    queryFn: () => DefaultService.getAssignmentsReadAssignmentsAssignmentIdSubjectIdCodeStateSectionsGet(assignmentId!, studentId!),
+    queryFn: () => DefaultService.getCodeStateSectionsForAssignmentSubject(assignmentId!, studentId!),
     enabled: !!(assignmentId && studentId),
   });
 
   const { data: eventLogs, isLoading: isLoadingEventLogs, isError: isErrorEventLogs } = useQuery({
     queryKey: ['eventLogs', assignmentId, studentId, selectedFile],
-    queryFn: () => DefaultService.getStudentEditsReadSubjectIdAssignmentIdCodestateSectionEditsGet(studentId!, assignmentId!, selectedFile!),
+    queryFn: () => DefaultService.getFileEdits(studentId!, selectedFile!),
     enabled: !!(assignmentId && studentId && selectedFile),
   });
 

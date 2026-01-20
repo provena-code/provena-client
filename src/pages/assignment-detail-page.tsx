@@ -8,7 +8,7 @@ export default function AssignmentDetailPage() {
 
   const { data: students, isLoading, isError } = useQuery({
     queryKey: ['students', assignmentId],
-    queryFn: () => DefaultService.getAssignmentsReadAssignmentsAssignmentIdSubjectsGet(assignmentId!),
+    queryFn: () => DefaultService.getSubjectStatsForAssignment(assignmentId!),
     enabled: !!assignmentId, // Ensure the query only runs when assignmentId is available
   });
 
