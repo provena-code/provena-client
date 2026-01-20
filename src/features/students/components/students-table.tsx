@@ -15,7 +15,8 @@ export type StudentSummary = AssignmentSubjectsResponseItem & {
 
 const columnHelper = createColumnHelper<StudentSummary>();
 
-const makeColumns = (assignmentId: string): ColumnDef<StudentSummary>[] => [
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const makeColumns = (assignmentId: string): ColumnDef<StudentSummary, any>[] => [
     columnHelper.accessor("SubjectID", {
         header: ({ column }) => {
             return (
