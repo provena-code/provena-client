@@ -14,16 +14,8 @@ if (import.meta.env.VITE_API_URL) {
   OpenAPI.BASE = 'http://127.0.0.1:8001';
 }
 
-// TODO: We don't really want this to be at compile level (visible in source)
 // We want this to be provided by the user at runtime
-if (import.meta.env.VITE_API_KEY) {
-  OpenAPI.HEADERS = {
-    'X-API-KEY': import.meta.env.VITE_API_KEY,
-  };
-  console.log('API Key set from environment variables.');
-} else {
-  console.warn('Warning: VITE_API_KEY is not set in the environment variables. Requests may be unauthorized.');
-}
+console.warn('Warning: VITE_API_KEY is not set in the environment variables. Requests may be unauthorized.');
 
 
 
