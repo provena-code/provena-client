@@ -8,22 +8,22 @@ import EventDetailViewer from '@/features/students/components/event-detail-viewe
 import MetadataViewer from '@/features/students/components/metadata-viewer';
 import { Metadata } from 'provena';
 
-export default function StudentDetailPage() {
-  const { assignmentId, studentId } = useParams<{ assignmentId: string; studentId: string }>();
+export default function StudentCodeStatesPage() {
+  const { studentId } = useParams<{ studentId: string }>();
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [currentFrame, setCurrentFrame] = useState<number | null>(null);
   const [hoveredMetadata, setHoveredMetadata] = useState<Metadata | null>(null);
 
   const { data: files, isLoading: isLoadingFiles, isError: isErrorFiles } = useQuery({
-    queryKey: ['files', assignmentId, studentId],
-    queryFn: () => DefaultService.getCodeStateSectionsForAssignmentSubject(assignmentId!, studentId!),
-    enabled: !!(assignmentId && studentId),
+    queryKey: ['files', studentId],
+    queryFn: () => DefaultService.getCodeStateSectionsForSubject(studentId!),
+    enabled: !!studentId,
   });
 
   const { data: eventLogs, isLoading: isLoadingEventLogs, isError: isErrorEventLogs } = useQuery({
-    queryKey: ['eventLogs', assignmentId, studentId, selectedFile],
-    queryFn: () => DefaultService.getFileEdits(studentId!, encodeURIComponent(selectedFile!)),
-    enabled: !!(assignmentId && studentId && selectedFile),
+    queryKey: ['eventLogs', studentId, selectedFile],
+    queryFn: () => DefaultService.getFileEdits(studentId!, selectedFile!),
+    enabled: !!(studentId && selectedFile),
   });
 
   useEffect(() => {

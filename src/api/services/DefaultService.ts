@@ -149,8 +149,8 @@ export class DefaultService {
     }
     /**
      * Get Student Edits
-     * @param subjectId
-     * @param codestateSection
+     * @param subjectId SubjectID
+     * @param codestateSection CodestateSection
      * @returns any Successful Response
      * @throws ApiError
      */
@@ -160,8 +160,8 @@ export class DefaultService {
     ): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/read/{subject_id}/{codestate_section}/edits',
-            path: {
+            url: '/read/edits',
+            query: {
                 'subject_id': subjectId,
                 'codestate_section': codestateSection,
             },
