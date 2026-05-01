@@ -96,9 +96,11 @@ export default function CodeHistoryPlayer({ codeHistory, onScrub, onMetadataHove
 
   const currentFrameData = codeHistory[currentFrame];
 
+  const showErrorBorder = currentFrameData && !currentFrameData.isInternallyConsistent;
+
   return (
     <div className="flex flex-col gap-4 h-full">
-      <div ref={scrollContainerRef} className="flex-grow overflow-y-auto border rounded h-[60vh]">
+      <div ref={scrollContainerRef} className="flex-grow overflow-y-auto border rounded h-[60vh]" style={{ borderColor: showErrorBorder ? 'red' : 'black' }}>
         <CodeViewer ref={highlightRef} frame={currentFrameData} onMetadataHover={onMetadataHover} />
       </div>
       <div className="flex items-center gap-4 p-4 border rounded-lg bg-gray-50">

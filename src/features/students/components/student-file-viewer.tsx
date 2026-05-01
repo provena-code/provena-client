@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { DefaultService } from '@/api';
 import FileList from '@/features/students/components/file-list';
 import EventLogViewer from '@/features/students/components/event-log-viewer';
 import EventDetailViewer from '@/features/students/components/event-detail-viewer';
 import MetadataViewer from '@/features/students/components/metadata-viewer';
-import { Metadata } from 'provena';
+import { Metadata, PS2 } from 'provena';
 
 interface StudentFileViewerProps {
     studentId: string;
@@ -47,7 +47,14 @@ export default function StudentFileViewer({ studentId, assignmentId }: StudentFi
         setHoveredMetadata(null);
     };
 
-    const currentEvent = eventLogs && currentFrame !== null ? eventLogs[currentFrame] : null;
+    const processedEditList = useMemo(() =>  {
+        if (!eventLogs || !Array.isArray(eventLogs)) {
+            return null;
+        }
+        return PS2.createEditHistory(eventLogs);
+    }, [eventLogs]);
+    const currentEventIDs = processedEditList && currentFrame !== null ? processedEditList[currentFrame].eventIDs : null;
+    const currentEvents = currentEventIDs && eventLogs && Array.isArray(eventLogs) ? eventLogs.filter(event => currentEventIDs.includes(event.EventID)) : [];
 
     return (
         <div className="p-4">
@@ -60,7 +67,7 @@ export default function StudentFileViewer({ studentId, assignmentId }: StudentFi
                     ) : (
                         <div className="p-4">No files found.</div>
                     )}
-                    <EventDetailViewer event={currentEvent} />
+                    <EventDetailViewer events={currentEvents} />
                     <MetadataViewer metadata={hoveredMetadata} />
                 </div>
 
