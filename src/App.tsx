@@ -1,10 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Routes, Route } from 'react-router-dom';
-import HomePage from '@/pages/home-page';
-import StudentCodeStatesPage from '@/pages/student-codestates-page';
-import StudentDetailPage from '@/pages/student-detail-page';
+import { Outlet } from 'react-router-dom';
 import Breadcrumbs from '@/components/breadcrumbs';
-import AssignmentDetailPage from './pages/assignment-detail-page';
 import ApiKeyModal from './components/api-key-modal';
 import { DefaultService, OpenAPI } from './api';
 import { Button } from './components/ui/button';
@@ -73,12 +69,7 @@ function App() {
             </Button>
           </div>
           <Breadcrumbs />
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/assignment/:assignmentId" element={<AssignmentDetailPage />} />
-            <Route path="/student/:studentId" element={<StudentCodeStatesPage />} />
-            <Route path="/assignment/:assignmentId/student/:studentId" element={<StudentDetailPage />} />
-          </Routes>
+          <Outlet />
         </>
       )}
     </div>

@@ -1,30 +1,27 @@
-import { Link, useMatch, useParams } from 'react-router-dom';
+import { Link, UIMatch, useMatches } from 'react-router-dom';
+
+export interface RouteHandle {
+  crumb: (params: Record<string, string | undefined>) => React.ReactNode;
+}
 
 const Breadcrumbs = () => {
-    // useParams is simpler than useMatch for this case
-    const params = useParams<{ assignmentId?: string; studentId?: string }>();
-    const { assignmentId, studentId } = params;
 
-    const breadcrumbs = [{ name: 'Home', path: '/' }];
+    const matches = useMatches() as UIMatch<unknown, RouteHandle>[];;
 
-    if (assignmentId) {
-        breadcrumbs.push({
-            name: `Assignment ${assignmentId}`,
-            path: `/assignment/${assignmentId}`,
-        });
-    }
-
-    if (studentId) {
-        let path;
-        if (assignmentId) {
-            path = `/assignment/${assignmentId}/student/${studentId}`;
-        } else {
-            path = `/student/${studentId}`;
+    // Filter matches that have a 'crumb' handle
+    const breadcrumbs = matches
+        .filter((match) => Boolean(match.handle?.crumb))
+        .map((match) => {
+            return {
+                name: match.handle.crumb(match.params),
+                path: match.pathname,
+            };
         }
-        breadcrumbs.push({
-            name: `Student ${studentId}`,
-            path: path,
-        });
+    );
+
+    // Always ensure a Home entry exists
+    if (!breadcrumbs.find((c) => c.path === '/')) {
+        breadcrumbs.unshift({ name: 'Home', path: '/' });
     }
 
     return (
