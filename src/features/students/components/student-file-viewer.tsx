@@ -51,7 +51,7 @@ export default function StudentFileViewer({ studentId, assignmentId }: StudentFi
         if (!eventLogs || !Array.isArray(eventLogs)) {
             return null;
         }
-        return PS2.createEditHistory(eventLogs);
+        return PS2.createEditHistory(eventLogs, {newLineMode: PS2.NewlineMode.AutoDetect});
     }, [eventLogs]);
     const currentEventIDs = processedEditList && currentFrame !== null ? processedEditList[currentFrame].eventIDs : null;
     const currentEvents = currentEventIDs && eventLogs && Array.isArray(eventLogs) ? eventLogs.filter(event => currentEventIDs.includes(event.EventID)) : [];
@@ -75,9 +75,9 @@ export default function StudentFileViewer({ studentId, assignmentId }: StudentFi
                     <>
                         {isLoadingEventLogs && <div className="w-3/4 p-4">Loading event logs...</div>}
                         {isErrorEventLogs && <div className="w-3/4 p-4">Error fetching event logs.</div>}
-                        {eventLogs && (
+                        {processedEditList && (
                             <EventLogViewer
-                                eventLogs={eventLogs}
+                                eventHistory={processedEditList}
                                 file={selectedFile}
                                 onScrub={setCurrentFrame}
                                 onMetadataHover={setHoveredMetadata}

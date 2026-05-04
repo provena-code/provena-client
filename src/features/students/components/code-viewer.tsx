@@ -35,7 +35,6 @@ const CodeViewer = forwardRef<HTMLSpanElement, CodeViewerProps>(({ frame, onMeta
       currentOffset = end;
 
       const spanProps = {
-        key: index,
         onMouseEnter: () => onMetadataHover(edit.metadata),
         onMouseLeave: () => onMetadataHover(null),
       }
@@ -64,13 +63,13 @@ const CodeViewer = forwardRef<HTMLSpanElement, CodeViewerProps>(({ frame, onMeta
           if (afterText) {
             spans.push(<span key={`after-${index}`}>{afterText}</span>);
           }
-          return <span {...spanProps} className={`inline ${className} border-b border-gray-300`}>
+          return <span key={index} {...spanProps} className={`inline ${className} border-b border-gray-300`}>
             {spans}
           </span>;
         }
       }
 
-      return <span {...spanProps} className={`inline ${className} border-b border-gray-300`}>
+      return <span key={index} {...spanProps} className={`inline ${className} border-b border-gray-300`}>
         {edit.text}
       </span>
     });
