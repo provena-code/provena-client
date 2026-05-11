@@ -128,6 +128,17 @@ export class DefaultService {
         });
     }
     /**
+     * Update Mapping Table Endpoint
+     * @returns any Successful Response
+     * @throws ApiError
+     */
+    public static updateMappingTable(): CancelablePromise<any> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/read/update_mapping_table',
+        });
+    }
+    /**
      * Get All Edits
      * @param assignmentId
      * @returns any Successful Response

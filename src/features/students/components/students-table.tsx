@@ -40,27 +40,27 @@ const makeColumns = (assignmentId: string): ColumnDef<StudentSummary, any>[] => 
             )
         }
     }),
-    columnHelper.accessor("InsertTextLength", {
+    columnHelper.accessor("LastSubmissionTime", {
         header: ({ column }) => {
             return (
               <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
               >
-                Added Text
+                Last Submission Time
                 <ArrowUpDown className="ml-2 h-4 w-4" />
               </Button>
             )
           },
     }),
-    columnHelper.accessor("DeleteTextLength", {
+    columnHelper.accessor("MaxScore", {
         header: ({ column }) => {
             return (
               <Button
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
               >
-                Deleted Text
+                MaxScore
                 <ArrowUpDown className="ml-2 h-4 w-4" />
               </Button>
             )
