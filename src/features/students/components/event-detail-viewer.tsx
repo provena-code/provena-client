@@ -8,9 +8,23 @@ interface EventDetailViewerProps {
 
 export default function EventDetailViewer({ events }: EventDetailViewerProps) {
   const [index, setIndex] = useState(0);
-
+  // Only reset index when `events` actually changes (deep equality),
+  // avoiding resets from stable/identical arrays or incidental re-renders.
+  const prevEventsRef = React.useRef<MainTableEvent[] | undefined>(undefined);
   useEffect(() => {
-    setIndex(0);
+    const prev = prevEventsRef.current;
+    // Serialize for a simple deep-equality check; arrays with identical
+    // contents will produce the same string.
+    const prevStr = prev ? JSON.stringify(prev) : undefined;
+    const nextStr = events ? JSON.stringify(events) : undefined;
+
+    if (prevStr === undefined) {
+      // initial mount - keep existing index (already 0)
+    } else if (prevStr !== nextStr) {
+      setIndex(0);
+    }
+
+    prevEventsRef.current = events;
   }, [events]);
 
   const removeNulls = (obj: MainTableEvent): Partial<MainTableEvent> => {
@@ -36,7 +50,7 @@ export default function EventDetailViewer({ events }: EventDetailViewerProps) {
       <h3 className="text-lg font-semibold mb-2">Event Details</h3>
 
       {current ? (
-        <pre className="bg-gray-100 p-2 rounded text-xs overflow-auto max-h-72">
+        <pre className="bg-gray-100 p-2 rounded text-xs overflow-auto min-h-65">
           {JSON.stringify(removeNulls(current), null, 2)}
         </pre>
       ) : (
