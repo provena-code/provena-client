@@ -9,11 +9,13 @@ import { Metadata, PS2 } from 'provena';
 interface CodeHistoryPlayerProps {
   codeHistory: PS2.EditHistoryFrame[];
   onScrub?: (frameIndex: number) => void;
+  currentFrame?: number | null;
   onMetadataHover: (metadata: Metadata | null) => void;
 }
 
-export default function CodeHistoryPlayer({ codeHistory, onScrub, onMetadataHover }: CodeHistoryPlayerProps) {
-  const [currentFrame, setCurrentFrame] = useState(codeHistory.length - 1);
+export default function CodeHistoryPlayer({ codeHistory, onScrub, onMetadataHover, currentFrame: controlledFrame }: CodeHistoryPlayerProps) {
+  const [internalFrame, setInternalFrame] = useState(codeHistory.length - 1);
+  const currentFrame = typeof controlledFrame === 'number' && controlledFrame !== null ? controlledFrame : internalFrame;
   const [isPlaying, setIsPlaying] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const highlightRef = useRef<HTMLSpanElement>(null);
@@ -37,37 +39,49 @@ export default function CodeHistoryPlayer({ codeHistory, onScrub, onMetadataHove
     if (isPlaying) {
       if (currentFrame === codeHistory.length - 1) {
         setIsPlaying(false);
-        setCurrentFrame(0);
+        if (controlledFrame === undefined) setInternalFrame(0);
         return;
       }
 
       const timer = setInterval(() => {
-        setCurrentFrame((prevFrame) => {
-          if (prevFrame < codeHistory.length - 1) {
-            return prevFrame + 1;
-          }
-          setIsPlaying(false);
-          return prevFrame;
-        });
+        if (controlledFrame === undefined) {
+          setInternalFrame((prevFrame) => {
+            if (prevFrame < codeHistory.length - 1) {
+              return prevFrame + 1;
+            }
+            setIsPlaying(false);
+            return prevFrame;
+          });
+        } else {
+          const next = Math.min(codeHistory.length - 1, (controlledFrame ?? 0) + 1);
+          onScrub?.(next);
+          if (next >= codeHistory.length - 1) setIsPlaying(false);
+        }
       }, 30);
 
       return () => clearInterval(timer);
     }
-  }, [isPlaying, currentFrame, codeHistory.length]);
+  }, [isPlaying, currentFrame, codeHistory.length, controlledFrame, onScrub]);
 
   const handlePlayPause = () => {
     if (isPlaying) {
       setIsPlaying(false);
     } else {
       if (currentFrame === codeHistory.length - 1) {
-        setCurrentFrame(0);
+        if (controlledFrame === undefined) setInternalFrame(0);
+        else onScrub?.(0);
       }
       setIsPlaying(true);
     }
   };
 
   const changeFrame = (direction: 'next' | 'prev') => {
-    setCurrentFrame((prev) => {
+    if (controlledFrame !== undefined) {
+      const next = direction === 'next' ? Math.min(codeHistory.length - 1, (controlledFrame ?? 0) + 1) : Math.max(0, (controlledFrame ?? 0) - 1);
+      onScrub?.(next);
+      return;
+    }
+    setInternalFrame((prev) => {
       if (direction === 'next') {
         return Math.min(codeHistory.length - 1, prev + 1);
       }
@@ -91,12 +105,23 @@ export default function CodeHistoryPlayer({ codeHistory, onScrub, onMetadataHove
 
   const handleSliderChange = (value: number[]) => {
     setIsPlaying(false);
-    setCurrentFrame(value[0]);
+    const v = value[0];
+    if (controlledFrame !== undefined) {
+      onScrub?.(v);
+    } else {
+      setInternalFrame(v);
+    }
   };
 
   const currentFrameData = codeHistory[currentFrame];
 
   const showErrorBorder = currentFrameData && !currentFrameData.isInternallyConsistent;
+
+  useEffect(() => {
+    if (controlledFrame === undefined) {
+      setInternalFrame(codeHistory.length - 1);
+    }
+  }, [codeHistory, controlledFrame]);
 
   return (
     <div className="flex flex-col gap-4 h-full">

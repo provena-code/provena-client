@@ -5,6 +5,7 @@ import FileList from '@/features/students/components/file-list';
 import EventLogViewer from '@/features/students/components/event-log-viewer';
 import EventDetailViewer from '@/features/students/components/event-detail-viewer';
 import MetadataViewer from '@/features/students/components/metadata-viewer';
+import ErrorViewer from '@/features/students/components/error-viewer';
 import { Metadata, PS2 } from 'provena';
 
 interface StudentFileViewerProps {
@@ -76,18 +77,24 @@ export default function StudentFileViewer({ studentId, assignmentId }: StudentFi
                         {isLoadingEventLogs && <div className="w-3/4 p-4">Loading event logs...</div>}
                         {isErrorEventLogs && <div className="w-3/4 p-4">Error fetching event logs.</div>}
                         {processedEditList && (
-                            <EventLogViewer
-                                eventHistory={processedEditList}
-                                file={selectedFile}
-                                onScrub={setCurrentFrame}
-                                onMetadataHover={setHoveredMetadata}
-                            />
+                            <>
+                                <EventLogViewer
+                                    eventHistory={processedEditList}
+                                    file={selectedFile}
+                                    onScrub={setCurrentFrame}
+                                    currentFrame={currentFrame}
+                                    onMetadataHover={setHoveredMetadata}
+                                />
+                            </>
                         )}
                     </>
                 ) : (
                     <div className="w-3/4 p-4">Select a file to view its logs.</div>
                 )}
             </div>
+            {processedEditList && (
+                <ErrorViewer history={processedEditList} onJump={(frameIndex) => setCurrentFrame(frameIndex)} />
+            )}
         </div>
     );
 }

@@ -6,10 +6,11 @@ interface EventLogViewerProps {
   eventHistory: PS2.EditHistoryFrame[];
   file: string;
   onScrub: (frameIndex: number) => void;
+  currentFrame?: number | null;
   onMetadataHover: (metadata: Metadata | null) => void;
 }
 
-export default function EventLogViewer({ eventHistory, file, onScrub, onMetadataHover }: EventLogViewerProps) {
+export default function EventLogViewer({ eventHistory, file, onScrub, currentFrame, onMetadataHover }: EventLogViewerProps) {
 
   return (
     <div className="w-3/4 p-4 h-full flex flex-col">
@@ -18,6 +19,7 @@ export default function EventLogViewer({ eventHistory, file, onScrub, onMetadata
         <CodeHistoryPlayer
           codeHistory={eventHistory}
           onScrub={onScrub}
+          currentFrame={currentFrame}
           onMetadataHover={onMetadataHover}
         />
       ) : (
