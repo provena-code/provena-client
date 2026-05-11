@@ -59,6 +59,9 @@ export default function StudentFileViewer({ studentId, assignmentId }: StudentFi
 
     return (
         <div className="p-4">
+            {processedEditList && (
+                <ErrorViewer history={processedEditList} onJump={(frameIndex) => setCurrentFrame(frameIndex)} />
+            )}
             <div className="flex border border-gray-300 rounded-md h-full">
                 <div className="w-1/4 border-r border-gray-300 flex flex-col">
                     {isLoadingFiles && <div className="p-4">Loading file list...</div>}
@@ -92,9 +95,6 @@ export default function StudentFileViewer({ studentId, assignmentId }: StudentFi
                     <div className="w-3/4 p-4">Select a file to view its logs.</div>
                 )}
             </div>
-            {processedEditList && (
-                <ErrorViewer history={processedEditList} onJump={(frameIndex) => setCurrentFrame(frameIndex)} />
-            )}
         </div>
     );
 }
