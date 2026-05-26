@@ -7,6 +7,7 @@ import EventDetailViewer from '@/features/students/components/event-detail-viewe
 import MetadataViewer from '@/features/students/components/metadata-viewer';
 import ErrorViewer from '@/features/students/components/error-viewer';
 import { Metadata, PS2 } from 'provena';
+import ClipboardViewer from './clipboard-viewer';
 
 interface StudentFileViewerProps {
     studentId: string;
@@ -15,7 +16,7 @@ interface StudentFileViewerProps {
 
 export default function StudentFileViewer({ studentId, assignmentId }: StudentFileViewerProps) {
     const [selectedFile, setSelectedFile] = useState<string | null>(null);
-    const [currentFrame, setCurrentFrame] = useState<number | null>(null);
+    const [currentFrameIndex, setCurrentFrame] = useState<number | null>(null);
     const [hoveredMetadata, setHoveredMetadata] = useState<Metadata | null>(null);
 
     const { data: files, isLoading: isLoadingFiles, isError: isErrorFiles } = useQuery({
@@ -54,7 +55,8 @@ export default function StudentFileViewer({ studentId, assignmentId }: StudentFi
         }
         return PS2.createEditHistory(eventLogs, {newLineMode: PS2.NewlineMode.AutoDetect});
     }, [eventLogs]);
-    const currentEventIDs = processedEditList && currentFrame !== null ? processedEditList[currentFrame].eventIDs : null;
+    const currentFrameData = processedEditList && currentFrameIndex !== null ? processedEditList[currentFrameIndex] : null;
+    const currentEventIDs = currentFrameData ? currentFrameData.eventIDs : null;
     const currentEvents = currentEventIDs && eventLogs && Array.isArray(eventLogs) ? eventLogs.filter(event => currentEventIDs.includes(event.EventID)) : [];
 
     return (
@@ -72,6 +74,7 @@ export default function StudentFileViewer({ studentId, assignmentId }: StudentFi
                         <div className="p-4">No files found.</div>
                     )}
                     <EventDetailViewer events={currentEvents} />
+                    <ClipboardViewer clipboard={currentFrameData?.currentClipboard ?? ''} />
                     <MetadataViewer metadata={hoveredMetadata} />
                 </div>
 
@@ -85,7 +88,7 @@ export default function StudentFileViewer({ studentId, assignmentId }: StudentFi
                                     eventHistory={processedEditList}
                                     file={selectedFile}
                                     onScrub={setCurrentFrame}
-                                    currentFrame={currentFrame}
+                                    currentFrame={currentFrameIndex}
                                     onMetadataHover={setHoveredMetadata}
                                 />
                             </>
