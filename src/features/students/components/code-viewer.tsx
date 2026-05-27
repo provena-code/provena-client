@@ -1,3 +1,4 @@
+import { findIndicesToRedact } from '@/lib/anon';
 import { Author, PS2, Metadata } from 'provena';
 import { forwardRef, useEffect, useState } from 'react';
 
@@ -25,6 +26,22 @@ const CodeViewer = forwardRef<HTMLSpanElement, CodeViewerProps>(({ frame, onMeta
     setAnimationKey(prev => prev + 1);
   }, [frame]);
 
+  const codeString = edits.map(edit => edit.text).join('');
+  const redactedIndices = findIndicesToRedact(codeString);
+
+  // For each edit, find any indices that need to be redaced (local to that string)
+  let currentOffset = 0;
+  const localRedactedIndices = edits.map(edit => {
+    const indices: number[] = [];
+    for (let i = 0; i < edit.text.length; i++) {
+      if (redactedIndices.has(currentOffset + i)) {
+        indices.push(i);
+      }
+    }
+    currentOffset += edit.text.length;
+    return indices;
+  });
+
   const renderSpans = () => {
     let currentOffset = 0;
     return edits.map((edit, index) => {
@@ -33,6 +50,12 @@ const CodeViewer = forwardRef<HTMLSpanElement, CodeViewerProps>(({ frame, onMeta
       const start = currentOffset;
       const end = start + edit.text.length;
       currentOffset = end;
+
+
+      let redactedText = edit.text;
+      for (const redactIndex of localRedactedIndices[index]) {
+        redactedText = redactedText.substring(0, redactIndex) + '█' + redactedText.substring(redactIndex + 1);
+      }
 
       const spanProps = {
         onMouseEnter: () => onMetadataHover(edit.metadata),
@@ -45,9 +68,9 @@ const CodeViewer = forwardRef<HTMLSpanElement, CodeViewerProps>(({ frame, onMeta
         if (editedRange && start < editedRange.end && end > editedRange.start) {
           const startIndex = Math.max(start, editedRange.start);
           const endIndex = Math.min(end, editedRange.end);
-          const highlightedText = edit.text.slice(startIndex - start, endIndex - start);
-          const beforeText = edit.text.slice(0, startIndex - start);
-          const afterText = edit.text.slice(endIndex - start);
+          const highlightedText = redactedText.slice(startIndex - start, endIndex - start);
+          const beforeText = redactedText.slice(0, startIndex - start);
+          const afterText = redactedText.slice(endIndex - start);
 
           const spans = [];
           if (beforeText) {
@@ -70,7 +93,7 @@ const CodeViewer = forwardRef<HTMLSpanElement, CodeViewerProps>(({ frame, onMeta
       }
 
       return <span key={index} {...spanProps} className={`inline ${className} border-b border-gray-300`}>
-        {edit.text}
+        {redactedText}
       </span>
     });
   };

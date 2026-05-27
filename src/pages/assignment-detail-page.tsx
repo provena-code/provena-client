@@ -11,7 +11,7 @@ export default function AssignmentDetailPage() {
     queryKey: ['students', assignmentId],
     queryFn: () => DefaultService.getSubjectStatsForAssignment(assignmentId!),
     enabled: !!assignmentId, // Ensure the query only runs when assignmentId is available
-    select: anonymizeArray
+    select: data => anonymizeArray(data).sort((a, b) => a.SubjectID.localeCompare(b.SubjectID)),
   });
 
   return (

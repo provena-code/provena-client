@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { MainTableEvent } from '@/api';
+import { anonymizeObject, redactCode } from '@/lib/anon';
 
 interface EventDetailViewerProps {
   events: MainTableEvent[];
@@ -42,6 +43,11 @@ export default function EventDetailViewer({ events }: EventDetailViewerProps) {
   const total = events?.length ?? 0;
   const current = total > 0 ? events[index] : undefined;
 
+  let anonEventData = current ? anonymizeObject(current) : null;
+  if (anonEventData && anonEventData.Code) {
+    anonEventData.Code = redactCode(anonEventData.Code);
+  }
+
   const prev = () => setIndex((i) => Math.max(0, i - 1));
   const next = () => setIndex((i) => Math.min(total - 1, i + 1));
 
@@ -49,9 +55,9 @@ export default function EventDetailViewer({ events }: EventDetailViewerProps) {
     <div className="p-4 border-t border-gray-300">
       <h3 className="text-lg font-semibold mb-2">Event Details</h3>
 
-      {current ? (
+      {anonEventData ? (
         <pre className="bg-gray-100 p-2 rounded text-xs overflow-auto min-h-65">
-          {JSON.stringify(removeNulls(current), null, 2)}
+          {JSON.stringify(removeNulls(anonEventData), null, 2)}
         </pre>
       ) : (
         <div>No event selected.</div>
