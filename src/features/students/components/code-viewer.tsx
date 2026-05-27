@@ -1,4 +1,5 @@
 import { findIndicesToRedact } from '@/lib/anon';
+import { useHighlightEnabled } from '@/lib/highlight-setting';
 import { Author, PS2, Metadata } from 'provena';
 import { forwardRef, useEffect, useState } from 'react';
 
@@ -42,11 +43,13 @@ const CodeViewer = forwardRef<HTMLSpanElement, CodeViewerProps>(({ frame, onMeta
     return indices;
   });
 
+  const [highlightEnabled] = useHighlightEnabled()
+
   const renderSpans = () => {
     let currentOffset = 0;
     return edits.map((edit, index) => {
       const authorId = edit.metadata.author;
-      const className = authorColorMap[authorId] || authorColorMap[Author.Unknown];
+      const className = highlightEnabled ? (authorColorMap[authorId] || authorColorMap[Author.Unknown]) : '';
       const start = currentOffset;
       const end = start + edit.text.length;
       currentOffset = end;
@@ -86,13 +89,13 @@ const CodeViewer = forwardRef<HTMLSpanElement, CodeViewerProps>(({ frame, onMeta
           if (afterText) {
             spans.push(<span key={`after-${index}`}>{afterText}</span>);
           }
-          return <span key={index} {...spanProps} className={`inline ${className} border-b border-gray-300`}>
+          return <span key={index} {...spanProps} className={`inline ${className}`}>
             {spans}
           </span>;
         }
       }
 
-      return <span key={index} {...spanProps} className={`inline ${className} border-b border-gray-300`}>
+      return <span key={index} {...spanProps} className={`inline ${className}`}>
         {redactedText}
       </span>
     });

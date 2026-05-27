@@ -1,6 +1,7 @@
 import { PS2 } from 'provena';
 import CodeHistoryPlayer from './code-history-player';
 import { Metadata } from 'provena';
+import { useHighlightEnabled } from '@/lib/highlight-setting';
 
 interface EventLogViewerProps {
   eventHistory: PS2.EditHistoryFrame[];
@@ -11,10 +12,21 @@ interface EventLogViewerProps {
 }
 
 export default function EventLogViewer({ eventHistory, file, onScrub, currentFrame, onMetadataHover }: EventLogViewerProps) {
+  const [highlightEnabled, setHighlightEnabled] = useHighlightEnabled();
 
   return (
     <div className="w-3/4 p-4 h-full flex flex-col">
-      <h3 className="text-lg font-semibold mb-2">Code History for {file}</h3>
+      <div className="mb-2 flex items-center justify-between gap-4">
+        <h3 className="text-lg font-semibold">Code History for {file}</h3>
+        <label className="flex items-center gap-2 text-sm font-medium">
+          Highlight
+          <input
+            type="checkbox"
+            checked={highlightEnabled}
+            onChange={(event) => setHighlightEnabled(event.target.checked)}
+          />
+        </label>
+      </div>
       {eventHistory && eventHistory.length > 0 ? (
         <CodeHistoryPlayer
           codeHistory={eventHistory}
