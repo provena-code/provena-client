@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
-import { DefaultService } from '@/api';
+import { AssignmentSubjectsResponseItem, DefaultService } from '@/api';
 import { StudentsTable } from '@/features/students/components/students-table';
+import { anonymizeArray, anonymizeObject } from '@/lib/anon';
 
 export default function AssignmentDetailPage() {
   const { assignmentId } = useParams<{ assignmentId: string }>();
@@ -10,6 +11,7 @@ export default function AssignmentDetailPage() {
     queryKey: ['students', assignmentId],
     queryFn: () => DefaultService.getSubjectStatsForAssignment(assignmentId!),
     enabled: !!assignmentId, // Ensure the query only runs when assignmentId is available
+    select: anonymizeArray
   });
 
   return (

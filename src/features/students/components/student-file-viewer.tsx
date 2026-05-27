@@ -8,6 +8,7 @@ import MetadataViewer from '@/features/students/components/metadata-viewer';
 import ErrorViewer from '@/features/students/components/error-viewer';
 import { Metadata, PS2 } from 'provena';
 import ClipboardViewer from './clipboard-viewer';
+import { getEmailFromAnonID } from '@/lib/anon';
 
 interface StudentFileViewerProps {
     studentId: string;
@@ -19,13 +20,15 @@ export default function StudentFileViewer({ studentId, assignmentId }: StudentFi
     const [currentFrameIndex, setCurrentFrame] = useState<number | null>(null);
     const [hoveredMetadata, setHoveredMetadata] = useState<Metadata | null>(null);
 
+    const email = getEmailFromAnonID(studentId);
+
     const { data: files, isLoading: isLoadingFiles, isError: isErrorFiles } = useQuery({
         queryKey: ['files', assignmentId, studentId],
         queryFn: () => {
             if (assignmentId) {
-                return DefaultService.getCodeStateSectionsForAssignmentSubject(assignmentId, studentId);
+                return DefaultService.getCodeStateSectionsForAssignmentSubject(assignmentId, email!);
             } else {
-                return DefaultService.getCodeStateSectionsForSubject(studentId);
+                return DefaultService.getCodeStateSectionsForSubject(email!);
             }
         },
         enabled: !!studentId,
@@ -33,7 +36,7 @@ export default function StudentFileViewer({ studentId, assignmentId }: StudentFi
 
     const { data: eventLogs, isLoading: isLoadingEventLogs, isError: isErrorEventLogs } = useQuery({
         queryKey: ['eventLogs', assignmentId, studentId, selectedFile],
-        queryFn: () => DefaultService.getFileEdits(studentId!, selectedFile!),
+        queryFn: () => DefaultService.getFileEdits(email!, selectedFile!),
         enabled: !!(studentId && selectedFile),
     });
 

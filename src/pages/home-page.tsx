@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { DefaultService } from '@/api';
 import { Link } from 'react-router-dom';
+import { anonymizeEmail } from '@/lib/anon';
 
 export default function HomePage() {
   const { data: assignments, isLoading: isLoadingAssignments, isError: isErrorAssignments } = useQuery({
@@ -11,6 +12,7 @@ export default function HomePage() {
   const { data: students, isLoading: isLoadingStudents, isError: isErrorStudents } = useQuery({
     queryKey: ['students'],
     queryFn: () => DefaultService.getSubjectIDs(),
+    select: (data: string[]) => data.map(anonymizeEmail).filter((id): id is string => !!id).sort(),
   });
 
   return (
