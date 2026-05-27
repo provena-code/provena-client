@@ -12,9 +12,10 @@ interface CodeHistoryPlayerProps {
   currentFrame?: number | null;
   onMetadataHover: (metadata: Metadata | null) => void;
   jumpToClientTime: (clientTime: number) => void;
+  sessionChangeThresholds: number[];
 }
 
-export default function CodeHistoryPlayer({ codeHistory, onScrub, onMetadataHover, currentFrame: controlledFrame, jumpToClientTime }: CodeHistoryPlayerProps) {
+export default function CodeHistoryPlayer({ codeHistory, onScrub, onMetadataHover, currentFrame: controlledFrame, jumpToClientTime, sessionChangeThresholds }: CodeHistoryPlayerProps) {
   const [internalFrame, setInternalFrame] = useState(codeHistory.length - 1);
   const currentFrame = typeof controlledFrame === 'number' && controlledFrame !== null ? controlledFrame : internalFrame;
   const [isPlaying, setIsPlaying] = useState(false);
@@ -124,6 +125,8 @@ export default function CodeHistoryPlayer({ codeHistory, onScrub, onMetadataHove
     }
   }, [codeHistory, controlledFrame]);
 
+  console.log(sessionChangeThresholds);
+
   return (
     <div className="flex flex-col gap-4 h-full">
       <div ref={scrollContainerRef} className="flex-grow overflow-y-auto border rounded h-[60vh]" style={{ borderColor: showErrorBorder ? 'red' : 'black' }}>
@@ -143,14 +146,31 @@ export default function CodeHistoryPlayer({ codeHistory, onScrub, onMetadataHove
         >
           <SkipBack className="h-4 w-4" />
         </Button>
-        <Slider
-          min={0}
-          max={codeHistory.length - 1}
-          step={1}
-          value={[currentFrame]}
-          onValueChange={handleSliderChange}
-          className="flex-grow"
-        />
+        <div className="slider-container">
+
+          <Slider
+            min={0}
+            max={codeHistory.length - 1}
+            step={1}
+            value={[currentFrame]}
+            onValueChange={handleSliderChange}
+            className="flex-grow"
+          />
+
+          <div className="session-indicators" style={{ position: 'relative', width: 'stretch', marginLeft: '7px', marginRight: '10px' }}>
+            {sessionChangeThresholds.map((threshold, index) => (
+              <div key={index} className="session-indicator" style={{
+                position: 'absolute',
+                left: `${threshold * 100}%`,
+                top: 0,
+                bottom: 0,
+                width: '2px',
+                backgroundColor: 'red',
+              }} />
+            ))}
+          </div>
+        </div>
+
         <Button
           onMouseDown={() => handleMouseDown('next')}
           onMouseUp={handleMouseUp}

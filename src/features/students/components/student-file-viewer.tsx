@@ -67,6 +67,20 @@ export default function StudentFileViewer({ studentId, assignmentId }: StudentFi
     const currentEventIDs = currentFrameData ? currentFrameData.eventIDs : null;
     const currentEvents = currentEventIDs && eventLogs && Array.isArray(eventLogs) ? eventLogs.filter(event => currentEventIDs.includes(event.EventID)) : [];
 
+    let sessionChangeThresholds: number[] = [];
+    let lastSessionID = '';
+    if (eventLogs && eventLogs.length > 0 && history) {
+        history.forEach((frame, index) => {
+            const firstEventID = frame.eventIDs[0];
+            const event = eventLogs.find(e => e.EventID === firstEventID);
+            if (event && event.SessionID && event.SessionID !== lastSessionID) {
+                sessionChangeThresholds.push(index / history.length);
+                lastSessionID = event.SessionID;
+            }
+        });
+    }
+
+
     const jumpToClientTime = (clientTime: number) => {
         if (!eventLogs || eventLogs.length === 0 || !history) return;
         const clientTimeToIsoString = new Date(clientTime).toISOString();
@@ -120,6 +134,7 @@ export default function StudentFileViewer({ studentId, assignmentId }: StudentFi
                                     currentFrame={currentFrameIndex}
                                     onMetadataHover={setHoveredMetadata}
                                     jumpToClientTime={jumpToClientTime}
+                                    sessionChangeThresholds={sessionChangeThresholds}
                                 />
                             </>
                         )}

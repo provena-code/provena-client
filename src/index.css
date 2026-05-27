@@ -26,3 +26,21 @@ body[data-ctrl-pressed="true"] .ctrl-clickable:hover {
   text-decoration: underline;
   color: #0066cc;
 }
+
+.slider-container {
+  width: 100%; /* Or 100% depending on your layout */
+}
+
+/* Make sure the slider takes up the full width of the container */
+input[type="range"] {
+  width: 100%;
+  margin: 0;
+}
+
+/* Optional: Add a little vertical "dot" or "tick" above the text */
+.session-indicator::before {
+  content: "•";
+  color: #333;
+  font-weight: bold;
+  margin-bottom: 2px;
+}
