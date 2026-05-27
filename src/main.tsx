@@ -14,6 +14,13 @@ if (import.meta.env.VITE_API_URL) {
   OpenAPI.BASE = 'http://127.0.0.1:8001';
 }
 
+let routerBase = '/';
+if (import.meta.env.VITE_APP_BASE_PATH) {
+  routerBase = import.meta.env.VITE_APP_BASE_PATH;
+} else {
+  console.warn('Warning: VITE_APP_BASE_PATH is not set in the environment variables. Using default base path "/".');
+}
+
 // We want this to be provided by the user at runtime
 console.warn('Warning: VITE_API_KEY is not set in the environment variables. Requests may be unauthorized.');
 
@@ -21,7 +28,7 @@ console.warn('Warning: VITE_API_KEY is not set in the environment variables. Req
 
 const queryClient = new QueryClient();
 
-const router = createBrowserRouter(appRoutes);
+const router = createBrowserRouter(appRoutes, { basename: routerBase });
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
