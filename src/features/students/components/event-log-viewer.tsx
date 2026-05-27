@@ -4,7 +4,7 @@ import { Metadata } from 'provena';
 import { useHighlightEnabled } from '@/lib/highlight-setting';
 
 interface EventLogViewerProps {
-  eventHistory: PS2.EditHistoryFrame[];
+  eventHistory: readonly PS2.EditHistoryFrame[];
   file: string;
   onScrub: (frameIndex: number) => void;
   currentFrame?: number | null;

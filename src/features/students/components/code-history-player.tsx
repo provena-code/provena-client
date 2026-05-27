@@ -7,7 +7,7 @@ import { Play, Pause, SkipBack, SkipForward } from 'lucide-react';
 import { Metadata, PS2 } from 'provena';
 
 interface CodeHistoryPlayerProps {
-  codeHistory: PS2.EditHistoryFrame[];
+  codeHistory: readonly PS2.EditHistoryFrame[];
   onScrub?: (frameIndex: number) => void;
   currentFrame?: number | null;
   onMetadataHover: (metadata: Metadata | null) => void;

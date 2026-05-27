@@ -31,14 +31,25 @@ export default function StudentFileViewer({ studentId, assignmentId }: StudentFi
                 return DefaultService.getCodeStateSectionsForSubject(email!);
             }
         },
+        select: (data: string[]) => data.sort((a, b) => a.includes("test") ? 1 : a.localeCompare(b)),
         enabled: !!studentId,
     });
 
-    const { data: eventLogs, isLoading: isLoadingEventLogs, isError: isErrorEventLogs } = useQuery({
+    const yielder = () => new Promise(resolve => setTimeout(resolve, 0)); // Yield to the event loop to keep UI responsive
+
+    const { data: logsAndHistory, isLoading: isLoadingEventLogs, isError: isErrorEventLogs } = useQuery({
         queryKey: ['eventLogs', assignmentId, studentId, selectedFile],
-        queryFn: () => DefaultService.getFileEdits(email!, selectedFile!),
+        queryFn: () => DefaultService.getFileEdits(email!, selectedFile!).then(async events => {
+            console.log(`Fetched ${events.length} events for file ${selectedFile}`);
+            return {
+                eventLogs: events,
+                history: await PS2.createEditHistoryAsync(events, yielder, { newLineMode: PS2.NewlineMode.AutoDetect })
+                // history: PS2.createEditHistory(events, { newLineMode: PS2.NewlineMode.AutoDetect })
+            };
+        }),
         enabled: !!(studentId && selectedFile),
     });
+    const {eventLogs, history} = logsAndHistory || {};
 
     useEffect(() => {
         if (files && Array.isArray(files) && files.length > 0 && !selectedFile) {
@@ -52,20 +63,14 @@ export default function StudentFileViewer({ studentId, assignmentId }: StudentFi
         setHoveredMetadata(null);
     };
 
-    const processedEditList = useMemo(() =>  {
-        if (!eventLogs || !Array.isArray(eventLogs)) {
-            return null;
-        }
-        return PS2.createEditHistory(eventLogs, {newLineMode: PS2.NewlineMode.AutoDetect});
-    }, [eventLogs]);
-    const currentFrameData = processedEditList && currentFrameIndex !== null ? processedEditList[currentFrameIndex] : null;
+    const currentFrameData = history && currentFrameIndex !== null ? history[currentFrameIndex] : null;
     const currentEventIDs = currentFrameData ? currentFrameData.eventIDs : null;
     const currentEvents = currentEventIDs && eventLogs && Array.isArray(eventLogs) ? eventLogs.filter(event => currentEventIDs.includes(event.EventID)) : [];
 
     return (
         <div className="p-4">
-            {processedEditList && (
-                <ErrorViewer history={processedEditList} onJump={(frameIndex) => setCurrentFrame(frameIndex)} />
+            {history && (
+                <ErrorViewer history={history} onJump={(frameIndex) => setCurrentFrame(frameIndex)} />
             )}
             <div className="flex border border-gray-300 rounded-md h-full">
                 <div className="w-1/4 border-r border-gray-300 flex flex-col">
@@ -85,10 +90,10 @@ export default function StudentFileViewer({ studentId, assignmentId }: StudentFi
                     <>
                         {isLoadingEventLogs && <div className="w-3/4 p-4">Loading event logs...</div>}
                         {isErrorEventLogs && <div className="w-3/4 p-4">Error fetching event logs.</div>}
-                        {processedEditList && (
+                        {history && (
                             <>
                                 <EventLogViewer
-                                    eventHistory={processedEditList}
+                                    eventHistory={history}
                                     file={selectedFile}
                                     onScrub={setCurrentFrame}
                                     currentFrame={currentFrameIndex}

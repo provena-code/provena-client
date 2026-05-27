@@ -2,7 +2,7 @@ import { PS2 } from 'core/src/progsnap/ProgSnap2Builder';
 import React from 'react';
 
 interface ErrorViewerProps {
-    history?: PS2.EditHistoryFrame[] | null;
+    history?: readonly PS2.EditHistoryFrame[] | null;
     onJump: (frameIndex: number) => void;
 }
 
