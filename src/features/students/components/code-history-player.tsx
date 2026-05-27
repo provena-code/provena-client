@@ -11,9 +11,10 @@ interface CodeHistoryPlayerProps {
   onScrub?: (frameIndex: number) => void;
   currentFrame?: number | null;
   onMetadataHover: (metadata: Metadata | null) => void;
+  jumpToClientTime: (clientTime: number) => void;
 }
 
-export default function CodeHistoryPlayer({ codeHistory, onScrub, onMetadataHover, currentFrame: controlledFrame }: CodeHistoryPlayerProps) {
+export default function CodeHistoryPlayer({ codeHistory, onScrub, onMetadataHover, currentFrame: controlledFrame, jumpToClientTime }: CodeHistoryPlayerProps) {
   const [internalFrame, setInternalFrame] = useState(codeHistory.length - 1);
   const currentFrame = typeof controlledFrame === 'number' && controlledFrame !== null ? controlledFrame : internalFrame;
   const [isPlaying, setIsPlaying] = useState(false);
@@ -126,7 +127,7 @@ export default function CodeHistoryPlayer({ codeHistory, onScrub, onMetadataHove
   return (
     <div className="flex flex-col gap-4 h-full">
       <div ref={scrollContainerRef} className="flex-grow overflow-y-auto border rounded h-[60vh]" style={{ borderColor: showErrorBorder ? 'red' : 'black' }}>
-        <CodeViewer ref={highlightRef} frame={currentFrameData} onMetadataHover={onMetadataHover} />
+        <CodeViewer ref={highlightRef} frame={currentFrameData} onMetadataHover={onMetadataHover} jumpToClientTime={jumpToClientTime} />
       </div>
       <div className="flex items-center gap-4 p-4 border rounded-lg bg-gray-50">
         <Button onClick={handlePlayPause} variant="outline" size="icon">

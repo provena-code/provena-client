@@ -9,9 +9,10 @@ interface EventLogViewerProps {
   onScrub: (frameIndex: number) => void;
   currentFrame?: number | null;
   onMetadataHover: (metadata: Metadata | null) => void;
+  jumpToClientTime: (clientTime: number) => void;
 }
 
-export default function EventLogViewer({ eventHistory, file, onScrub, currentFrame, onMetadataHover }: EventLogViewerProps) {
+export default function EventLogViewer({ eventHistory, file, onScrub, currentFrame, onMetadataHover, jumpToClientTime }: EventLogViewerProps) {
   const [highlightEnabled, setHighlightEnabled] = useHighlightEnabled();
 
   return (
@@ -33,6 +34,7 @@ export default function EventLogViewer({ eventHistory, file, onScrub, currentFra
           onScrub={onScrub}
           currentFrame={currentFrame}
           onMetadataHover={onMetadataHover}
+          jumpToClientTime={jumpToClientTime}
         />
       ) : (
         <div>No code history found for this file.</div>

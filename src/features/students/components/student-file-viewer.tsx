@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { DefaultService } from '@/api';
+import { DefaultService, MainTableEvent } from '@/api';
 import FileList from '@/features/students/components/file-list';
 import EventLogViewer from '@/features/students/components/event-log-viewer';
 import EventDetailViewer from '@/features/students/components/event-detail-viewer';
@@ -42,7 +42,7 @@ export default function StudentFileViewer({ studentId, assignmentId }: StudentFi
         queryFn: () => DefaultService.getFileEdits(email!, selectedFile!).then(async events => {
             console.log(`Fetched ${events.length} events for file ${selectedFile}`);
             return {
-                eventLogs: events,
+                eventLogs: events as MainTableEvent[],
                 history: await PS2.createEditHistoryAsync(events, yielder, { newLineMode: PS2.NewlineMode.AutoDetect })
                 // history: PS2.createEditHistory(events, { newLineMode: PS2.NewlineMode.AutoDetect })
             };
@@ -66,6 +66,27 @@ export default function StudentFileViewer({ studentId, assignmentId }: StudentFi
     const currentFrameData = history && currentFrameIndex !== null ? history[currentFrameIndex] : null;
     const currentEventIDs = currentFrameData ? currentFrameData.eventIDs : null;
     const currentEvents = currentEventIDs && eventLogs && Array.isArray(eventLogs) ? eventLogs.filter(event => currentEventIDs.includes(event.EventID)) : [];
+
+    const jumpToClientTime = (clientTime: number) => {
+        if (!eventLogs || eventLogs.length === 0 || !history) return;
+        const clientTimeToIsoString = new Date(clientTime).toISOString();
+        console.log(`Jumping to client time ${clientTime} (${clientTimeToIsoString})`);
+        let index = 0;
+        let found = false;
+        while (index < history.length && !found) {
+            const frame = history[index];
+            for (const eventID of frame.eventIDs) {
+                const event = eventLogs.find(e => e.EventID === eventID);
+                const clientTimestamp = event?.ClientTimestamp;
+                if (clientTimestamp && clientTimestamp >= clientTimeToIsoString) {
+                    setCurrentFrame(index);
+                    found = true;
+                    break;
+                }
+            }
+            index++;
+        }
+    };
 
     return (
         <div className="p-4">
@@ -98,6 +119,7 @@ export default function StudentFileViewer({ studentId, assignmentId }: StudentFi
                                     onScrub={setCurrentFrame}
                                     currentFrame={currentFrameIndex}
                                     onMetadataHover={setHoveredMetadata}
+                                    jumpToClientTime={jumpToClientTime}
                                 />
                             </>
                         )}

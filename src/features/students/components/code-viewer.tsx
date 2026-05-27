@@ -6,6 +6,7 @@ import { forwardRef, useEffect, useState } from 'react';
 interface CodeViewerProps {
   frame: PS2.EditHistoryFrame;
   onMetadataHover: (metadata: Metadata | null) => void;
+  jumpToClientTime: (clientTime: number) => void;
 }
 
 const authorColorMap: { [key in Author]?: string } = {
@@ -17,9 +18,38 @@ const authorColorMap: { [key in Author]?: string } = {
   [Author.Unknown]: 'bg-red-200',
 };
 
-const CodeViewer = forwardRef<HTMLSpanElement, CodeViewerProps>(({ frame, onMetadataHover }, ref) => {
+const CodeViewer = forwardRef<HTMLSpanElement, CodeViewerProps>(({ frame, onMetadataHover, jumpToClientTime }, ref) => {
   const { edits, editedRanges } = frame;
   const [animationKey, setAnimationKey] = useState(0);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Control") {
+        document.body.setAttribute("data-ctrl-pressed", "true");
+      }
+    };
+
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.key === "Control") {
+        document.body.removeAttribute("data-ctrl-pressed");
+      }
+    };
+
+    // Reset if user tabs away or leaves the window
+    const handleBlur = () => {
+      document.body.removeAttribute("data-ctrl-pressed");
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+    window.addEventListener("blur", handleBlur);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+      window.removeEventListener("blur", handleBlur);
+    };
+  }, []);
 
   // By changing the key of the highlight span, we force React to create a new
   // element, which makes the CSS animation re-trigger.
@@ -63,6 +93,12 @@ const CodeViewer = forwardRef<HTMLSpanElement, CodeViewerProps>(({ frame, onMeta
       const spanProps = {
         onMouseEnter: () => onMetadataHover(edit.metadata),
         onMouseLeave: () => onMetadataHover(null),
+        onClick: (e: React.MouseEvent<HTMLSpanElement>) => {
+          // If control is held down
+          if (e.ctrlKey) {
+            jumpToClientTime(edit.metadata.endTime)
+          }
+        },
       }
 
       // TODO: Figure out how to handle multi-range edits
@@ -89,13 +125,13 @@ const CodeViewer = forwardRef<HTMLSpanElement, CodeViewerProps>(({ frame, onMeta
           if (afterText) {
             spans.push(<span key={`after-${index}`}>{afterText}</span>);
           }
-          return <span key={index} {...spanProps} className={`inline ${className}`}>
+          return <span key={index} {...spanProps} className={`inline ctrl-clickable ${className}`}>
             {spans}
           </span>;
         }
       }
 
-      return <span key={index} {...spanProps} className={`inline ${className}`}>
+      return <span key={index} {...spanProps} className={`inline ctrl-clickable ${className}`}>
         {redactedText}
       </span>
     });

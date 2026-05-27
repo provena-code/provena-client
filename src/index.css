@@ -15,3 +15,14 @@
   text-decoration: underline;
   text-decoration-thickness: 2px;
 }
+
+
+/* These styles ONLY apply when the body has the data attribute */
+body[data-ctrl-pressed="true"] .ctrl-clickable {
+  cursor: pointer;
+}
+
+body[data-ctrl-pressed="true"] .ctrl-clickable:hover {
+  text-decoration: underline;
+  color: #0066cc;
+}
