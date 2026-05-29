@@ -25,8 +25,16 @@ if (import.meta.env.VITE_APP_BASE_PATH) {
 console.warn('Warning: VITE_API_KEY is not set in the environment variables. Requests may be unauthorized.');
 
 
-
-const queryClient = new QueryClient();
+const isDev = process.env.NODE_ENV === 'development';
+const queryClient = new QueryClient({
+  defaultOptions: {
+    // Just load data on page load; assume it's valid for that time period
+    queries: {
+      refetchOnWindowFocus: false,
+      staleTime: isDev ? 0 : Infinity,
+    },
+  },
+});
 
 const router = createBrowserRouter(appRoutes, { basename: routerBase });
 

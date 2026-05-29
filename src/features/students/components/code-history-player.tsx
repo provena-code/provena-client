@@ -125,8 +125,6 @@ export default function CodeHistoryPlayer({ codeHistory, onScrub, onMetadataHove
     }
   }, [codeHistory, controlledFrame]);
 
-  console.log(sessionChangeThresholds);
-
   return (
     <div className="flex flex-col gap-4 h-full">
       <div ref={scrollContainerRef} className="flex-grow overflow-y-auto border rounded h-[60vh]" style={{ borderColor: showErrorBorder ? 'red' : 'black' }}>

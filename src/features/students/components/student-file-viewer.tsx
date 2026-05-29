@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { DefaultService, MainTableEvent } from '@/api';
 import FileList from '@/features/students/components/file-list';
@@ -40,7 +40,7 @@ export default function StudentFileViewer({ studentId, assignmentId }: StudentFi
     const { data: logsAndHistory, isLoading: isLoadingEventLogs, isError: isErrorEventLogs } = useQuery({
         queryKey: ['eventLogs', assignmentId, studentId, selectedFile],
         queryFn: () => DefaultService.getFileEdits(email!, selectedFile!).then(async events => {
-            console.log(`Fetched ${events.length} events for file ${selectedFile}`);
+            // console.log(`Fetched ${events.length} events for file ${selectedFile}`);
             return {
                 eventLogs: events as MainTableEvent[],
                 history: await PS2.createEditHistoryAsync(events, yielder, { newLineMode: PS2.NewlineMode.AutoDetect })
@@ -67,7 +67,7 @@ export default function StudentFileViewer({ studentId, assignmentId }: StudentFi
     const currentEventIDs = currentFrameData ? currentFrameData.eventIDs : null;
     const currentEvents = currentEventIDs && eventLogs && Array.isArray(eventLogs) ? eventLogs.filter(event => currentEventIDs.includes(event.EventID)) : [];
 
-    let sessionChangeThresholds: number[] = [];
+    const sessionChangeThresholds: number[] = [];
     let lastSessionID = '';
     if (eventLogs && eventLogs.length > 0 && history) {
         history.forEach((frame, index) => {
