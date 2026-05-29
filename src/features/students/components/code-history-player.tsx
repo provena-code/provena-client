@@ -19,6 +19,7 @@ export default function CodeHistoryPlayer({ codeHistory, onScrub, onMetadataHove
   const [internalFrame, setInternalFrame] = useState(codeHistory.length - 1);
   const currentFrame = typeof controlledFrame === 'number' && controlledFrame !== null ? controlledFrame : internalFrame;
   const [isPlaying, setIsPlaying] = useState(false);
+  const [hoverCharacterIndex, setHoverCharacterIndex] = useState<number | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const highlightRef = useRef<HTMLSpanElement>(null);
   const holdTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -125,10 +126,27 @@ export default function CodeHistoryPlayer({ codeHistory, onScrub, onMetadataHove
     }
   }, [codeHistory, controlledFrame]);
 
+  useEffect(() => {
+    setHoverCharacterIndex(null);
+  }, [currentFrame]);
+
   return (
     <div className="flex flex-col gap-4 h-full">
-      <div ref={scrollContainerRef} className="flex-grow overflow-y-auto border rounded h-[60vh]" style={{ borderColor: showErrorBorder ? 'red' : 'black' }}>
-        <CodeViewer ref={highlightRef} frame={currentFrameData} onMetadataHover={onMetadataHover} jumpToClientTime={jumpToClientTime} />
+      <div className="relative flex-grow h-[60vh]">
+        <div ref={scrollContainerRef} className="h-full overflow-y-auto border rounded" style={{ borderColor: showErrorBorder ? 'red' : 'black' }}>
+          <CodeViewer
+            ref={highlightRef}
+            frame={currentFrameData}
+            onMetadataHover={onMetadataHover}
+            jumpToClientTime={jumpToClientTime}
+            onHoverCharacterIndexChange={setHoverCharacterIndex}
+          />
+        </div>
+        {hoverCharacterIndex !== null && (
+          <div className="pointer-events-none absolute bottom-2 right-2 rounded bg-black/50 px-2 py-1 text-xs text-white">
+            {hoverCharacterIndex}
+          </div>
+        )}
       </div>
       <div className="flex items-center gap-4 p-4 border rounded-lg bg-gray-50">
         <Button onClick={handlePlayPause} variant="outline" size="icon">

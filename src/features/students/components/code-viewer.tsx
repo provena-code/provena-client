@@ -7,6 +7,7 @@ interface CodeViewerProps {
   frame: PS2.EditHistoryFrame;
   onMetadataHover: (metadata: Metadata | null) => void;
   jumpToClientTime: (clientTime: number) => void;
+  onHoverCharacterIndexChange?: (characterIndex: number | null) => void;
 }
 
 const authorColorMap: { [key in Author]?: string } = {
@@ -18,7 +19,7 @@ const authorColorMap: { [key in Author]?: string } = {
   [Author.Unknown]: 'bg-red-200',
 };
 
-const CodeViewer = forwardRef<HTMLSpanElement, CodeViewerProps>(({ frame, onMetadataHover, jumpToClientTime }, ref) => {
+const CodeViewer = forwardRef<HTMLSpanElement, CodeViewerProps>(({ frame, onMetadataHover, jumpToClientTime, onHoverCharacterIndexChange }, ref) => {
   const { edits, editedRanges } = frame;
   const [animationKey, setAnimationKey] = useState(0);
 
@@ -75,6 +76,40 @@ const CodeViewer = forwardRef<HTMLSpanElement, CodeViewerProps>(({ frame, onMeta
 
   const [highlightEnabled] = useHighlightEnabled()
 
+  const getLocalCharacterIndex = (
+    e: React.MouseEvent<HTMLSpanElement>,
+    textLength: number,
+  ) => {
+    if (textLength === 0) {
+      return 0;
+    }
+
+    const target = e.currentTarget;
+    let localIndex = textLength - 1;
+
+    if (typeof document.caretPositionFromPoint === 'function') {
+      const caretPosition = document.caretPositionFromPoint(e.clientX, e.clientY);
+      if (
+        caretPosition &&
+        caretPosition.offsetNode &&
+        target.contains(caretPosition.offsetNode)
+      ) {
+        localIndex = caretPosition.offset;
+      }
+    } else if (typeof document.caretRangeFromPoint === 'function') {
+      const caretRange = document.caretRangeFromPoint(e.clientX, e.clientY);
+      if (
+        caretRange &&
+        caretRange.startContainer &&
+        target.contains(caretRange.startContainer)
+      ) {
+        localIndex = caretRange.startOffset;
+      }
+    }
+
+    return Math.max(0, Math.min(textLength - 1, localIndex));
+  };
+
   const renderSpans = () => {
     let currentOffset = 0;
     return edits.map((edit, index) => {
@@ -92,7 +127,14 @@ const CodeViewer = forwardRef<HTMLSpanElement, CodeViewerProps>(({ frame, onMeta
 
       const spanProps = {
         onMouseEnter: () => onMetadataHover(edit.metadata),
-        onMouseLeave: () => onMetadataHover(null),
+        onMouseMove: (e: React.MouseEvent<HTMLSpanElement>) => {
+          const localCharacterIndex = getLocalCharacterIndex(e, redactedText.length);
+          onHoverCharacterIndexChange?.(start + localCharacterIndex);
+        },
+        onMouseLeave: () => {
+          onMetadataHover(null);
+          onHoverCharacterIndexChange?.(null);
+        },
         onClick: (e: React.MouseEvent<HTMLSpanElement>) => {
           // If control is held down
           if (e.ctrlKey) {
@@ -138,7 +180,7 @@ const CodeViewer = forwardRef<HTMLSpanElement, CodeViewerProps>(({ frame, onMeta
   };
 
   return (
-    <div className="font-mono text-sm whitespace-pre-wrap p-2 bg-white" style={{ lineHeight: 1.15 }}>
+    <div className="font-mono text-sm whitespace-pre-wrap p-2 bg-white" style={{ lineHeight: 1.15 }} onMouseLeave={() => onHoverCharacterIndexChange?.(null)}>
       {renderSpans()}
     </div>
   );
