@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { DefaultService, MainTableEvent } from '@/api';
 import FileList from '@/features/students/components/file-list';
@@ -67,18 +67,21 @@ export default function StudentFileViewer({ studentId, assignmentId }: StudentFi
     const currentEventIDs = currentFrameData ? currentFrameData.eventIDs : null;
     const currentEvents = currentEventIDs && eventLogs && Array.isArray(eventLogs) ? eventLogs.filter(event => currentEventIDs.includes(event.EventID)) : [];
 
-    const sessionChangeThresholds: number[] = [];
-    let lastSessionID = '';
-    if (eventLogs && eventLogs.length > 0 && history) {
-        history.forEach((frame, index) => {
-            const firstEventID = frame.eventIDs[0];
-            const event = eventLogs.find(e => e.EventID === firstEventID);
-            if (event && event.SessionID && event.SessionID !== lastSessionID) {
-                sessionChangeThresholds.push(index / history.length);
-                lastSessionID = event.SessionID;
-            }
-        });
-    }
+    const sessionChangeThresholds = useMemo(() => {
+        const thresholds: number[] = [];
+        let lastSessionID = '';
+        if (eventLogs && eventLogs.length > 0 && history) {
+            history.forEach((frame, index) => {
+                const firstEventID = frame.eventIDs[0];
+                const event = eventLogs.find(e => e.EventID === firstEventID);
+                if (event && event.SessionID && event.SessionID !== lastSessionID) {
+                    thresholds.push(index / history.length);
+                    lastSessionID = event.SessionID;
+                }
+            });
+        }
+        return thresholds;
+    }, [eventLogs, history]);
 
 
     const jumpToClientTime = (clientTime: number) => {
