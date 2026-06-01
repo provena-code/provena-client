@@ -136,8 +136,8 @@ const CodeViewer = forwardRef<HTMLSpanElement, CodeViewerProps>(({ frame, onMeta
           onHoverCharacterIndexChange?.(null);
         },
         onClick: (e: React.MouseEvent<HTMLSpanElement>) => {
-          // If control is held down
-          if (e.ctrlKey) {
+          // If control (windows) or command (mac) is held down
+          if (e.ctrlKey || e.metaKey) {
             jumpToClientTime(edit.metadata.endTime)
           }
         },
