@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { DefaultService, MainTableEvent } from '@/api';
 import FileList from '@/features/students/components/file-list';
@@ -67,22 +67,22 @@ export default function StudentFileViewer({ studentId, assignmentId }: StudentFi
     const currentEventIDs = currentFrameData ? currentFrameData.eventIDs : null;
     const currentEvents = currentEventIDs && eventLogs && Array.isArray(eventLogs) ? eventLogs.filter(event => currentEventIDs.includes(event.EventID)) : [];
 
-    const sessionChangeThresholds = useMemo(() => {
-        const thresholds: number[] = [];
-        let lastSessionID = '';
-        if (eventLogs && eventLogs.length > 0 && history) {
-            history.forEach((frame, index) => {
-                const firstEventID = frame.eventIDs[0];
-                const event = eventLogs.find(e => e.EventID === firstEventID);
-                if (event && event.SessionID && event.SessionID !== lastSessionID) {
-                    thresholds.push(index / history.length);
-                    lastSessionID = event.SessionID;
-                }
-            });
-        }
-        return thresholds;
-    }, [eventLogs, history]);
-
+    // const sessionChangeThresholds = useMemo(() => {
+    //     const thresholds: number[] = [];
+    //     let lastSessionID = '';
+    //     if (eventLogs && eventLogs.length > 0 && history) {
+    //         history.forEach((frame, index) => {
+    //             const firstEventID = frame.eventIDs[0];
+    //             const event = eventLogs.find(e => e.EventID === firstEventID);
+    //             if (event && event.SessionID && event.SessionID !== lastSessionID) {
+    //                 thresholds.push(index / history.length);
+    //                 lastSessionID = event.SessionID;
+    //             }
+    //         });
+    //     }
+    //     return thresholds;
+    // }, [eventLogs, history]);
+    const discontinuityIndices = history ? history.map((frame, index) => frame.hadDiscontinuity ? index : null).filter(v => v !== null) : [];
 
     const jumpToClientTime = (clientTime: number) => {
         if (!eventLogs || eventLogs.length === 0 || !history) return;
@@ -119,7 +119,7 @@ export default function StudentFileViewer({ studentId, assignmentId }: StudentFi
                     ) : (
                         <div className="p-4">No files found.</div>
                     )}
-                    <EventDetailViewer events={currentEvents} />
+                    <EventDetailViewer events={currentEvents} hadDiscontinuity={currentFrameData?.hadDiscontinuity} />
                     <ClipboardViewer clipboard={currentFrameData?.currentClipboard ?? ''} />
                     <MetadataViewer metadata={hoveredMetadata} />
                 </div>
@@ -137,7 +137,7 @@ export default function StudentFileViewer({ studentId, assignmentId }: StudentFi
                                     currentFrame={currentFrameIndex}
                                     onMetadataHover={setHoveredMetadata}
                                     jumpToClientTime={jumpToClientTime}
-                                    sessionChangeThresholds={sessionChangeThresholds}
+                                    discontinuityIndices={discontinuityIndices}
                                 />
                             </>
                         )}

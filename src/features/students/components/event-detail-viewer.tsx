@@ -5,9 +5,10 @@ import { anonymizeObject, redactCode } from '@/lib/anon';
 
 interface EventDetailViewerProps {
   events: MainTableEvent[];
+  hadDiscontinuity?: boolean;
 }
 
-export default function EventDetailViewer({ events }: EventDetailViewerProps) {
+export default function EventDetailViewer({ events, hadDiscontinuity }: EventDetailViewerProps) {
   const [index, setIndex] = useState(0);
   // Only reset index when `events` actually changes (deep equality),
   // avoiding resets from stable/identical arrays or incidental re-renders.
@@ -39,7 +40,9 @@ export default function EventDetailViewer({ events }: EventDetailViewerProps) {
 
   const formatValue = (value: unknown): string => {
     if (typeof value === 'string') {
-      return value;
+      // replace newlines (with or without \r) with ⏎ symbol
+      // to keep it on a single line in the UI
+      return value.replace(/\r?\n/g, '⏎');
     }
 
     if (typeof value === 'number' || typeof value === 'boolean') {
@@ -67,6 +70,12 @@ export default function EventDetailViewer({ events }: EventDetailViewerProps) {
   return (
     <div className="p-2 border-t border-gray-300">
       <h3 className="text-lg font-semibold mb-2">Event Details</h3>
+      { hadDiscontinuity && (
+        <div className="mb-2 p-2 bg-red-100 text-red-800 rounded">
+          Warning: Discontinuity
+        </div>
+       )
+      }
 
       {anonEventData ? (
         <div className="min-h-65 overflow-auto">
@@ -74,7 +83,10 @@ export default function EventDetailViewer({ events }: EventDetailViewerProps) {
             {displayEntries.map(([key, value]) => (
               <div key={key} className="bg-white px-1 py-0.5">
                 <div className="text-[8px] uppercase leading-none tracking-wide text-gray-500 mb-0.5">{key}</div>
-                <div className="font-mono text-[11px] leading-tight text-gray-900 whitespace-pre">
+                <div
+                  className="font-mono text-[11px] leading-tight text-gray-900 whitespace-pre"
+                  title={String(value)}
+                >
                   {formatValue(value)}
                 </div>
               </div>

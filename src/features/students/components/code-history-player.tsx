@@ -12,10 +12,10 @@ interface CodeHistoryPlayerProps {
   currentFrame?: number | null;
   onMetadataHover: (metadata: Metadata | null) => void;
   jumpToClientTime: (clientTime: number) => void;
-  sessionChangeThresholds: number[];
+  discontinuityIndices: number[];
 }
 
-export default function CodeHistoryPlayer({ codeHistory, onScrub, onMetadataHover, currentFrame: controlledFrame, jumpToClientTime, sessionChangeThresholds }: CodeHistoryPlayerProps) {
+export default function CodeHistoryPlayer({ codeHistory, onScrub, onMetadataHover, currentFrame: controlledFrame, jumpToClientTime, discontinuityIndices }: CodeHistoryPlayerProps) {
   const [internalFrame, setInternalFrame] = useState(codeHistory.length - 1);
   const currentFrame = typeof controlledFrame === 'number' && controlledFrame !== null ? controlledFrame : internalFrame;
   const [isPlaying, setIsPlaying] = useState(false);
@@ -174,15 +174,16 @@ export default function CodeHistoryPlayer({ codeHistory, onScrub, onMetadataHove
           />
 
           <div className="session-indicators" style={{ position: 'relative', width: 'stretch', marginLeft: '7px', marginRight: '10px' }}>
-            {sessionChangeThresholds.map((threshold, index) => (
+            {discontinuityIndices.map((frameIndex, index) => (
               <div key={index} className="session-indicator" style={{
                 position: 'absolute',
-                left: `${threshold * 100}%`,
+                left: `${(frameIndex / codeHistory.length) * 100}%`,
                 top: 0,
                 bottom: 0,
                 width: '2px',
                 backgroundColor: 'red',
-              }} />
+                cursor: 'pointer',
+              }} onClick={() => onScrub?.(frameIndex)} />
             ))}
           </div>
         </div>
