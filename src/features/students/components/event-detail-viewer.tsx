@@ -28,37 +28,59 @@ export default function EventDetailViewer({ events }: EventDetailViewerProps) {
     prevEventsRef.current = events;
   }, [events]);
 
-  const removeNulls = (obj: MainTableEvent): Partial<MainTableEvent> => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const cleanedObj: any = {};
-    for (const key in obj) {
-      const value = obj[key as keyof MainTableEvent];
+  const removeNulls = <T extends Record<string, unknown>>(obj: T): Partial<T> => {
+    return Object.entries(obj).reduce((acc, [key, value]) => {
       if (value !== null && value !== undefined) {
-        cleanedObj[key] = value;
+        acc[key as keyof T] = value as T[keyof T];
       }
+      return acc;
+    }, {} as Partial<T>);
+  };
+
+  const formatValue = (value: unknown): string => {
+    if (typeof value === 'string') {
+      return value;
     }
-    return cleanedObj;
+
+    if (typeof value === 'number' || typeof value === 'boolean') {
+      return String(value);
+    }
+
+    return JSON.stringify(value, null, 2);
   };
 
   const total = events?.length ?? 0;
   const current = total > 0 ? events[index] : undefined;
 
-  let anonEventData = current ? anonymizeObject(current) : null;
+  const anonEventData = current ? anonymizeObject(current) : null;
   if (anonEventData && anonEventData.Code) {
     anonEventData.Code = redactCode(anonEventData.Code);
   }
+
+  const displayEntries = anonEventData
+    ? Object.entries(removeNulls(anonEventData as Record<string, unknown>))
+    : [];
 
   const prev = () => setIndex((i) => Math.max(0, i - 1));
   const next = () => setIndex((i) => Math.min(total - 1, i + 1));
 
   return (
-    <div className="p-4 border-t border-gray-300">
+    <div className="p-2 border-t border-gray-300">
       <h3 className="text-lg font-semibold mb-2">Event Details</h3>
 
       {anonEventData ? (
-        <pre className="bg-gray-100 p-2 rounded text-xs overflow-auto min-h-65">
-          {JSON.stringify(removeNulls(anonEventData), null, 2)}
-        </pre>
+        <div className="min-h-65 overflow-auto">
+          <div className="grid grid-cols-1">
+            {displayEntries.map(([key, value]) => (
+              <div key={key} className="bg-white px-1 py-0.5">
+                <div className="text-[8px] uppercase leading-none tracking-wide text-gray-500 mb-0.5">{key}</div>
+                <div className="font-mono text-[11px] leading-tight text-gray-900 whitespace-pre">
+                  {formatValue(value)}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       ) : (
         <div>No event selected.</div>
       )}
