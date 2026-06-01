@@ -16,10 +16,23 @@ interface EventLogViewerProps {
 export default function EventLogViewer({ eventHistory, file, onScrub, currentFrame, onMetadataHover, jumpToClientTime, discontinuityIndices }: EventLogViewerProps) {
   const [highlightEnabled, setHighlightEnabled] = useHighlightEnabled();
 
+  function copyCurrentCode() {
+    // A bit of a hack, but easier than keeping a ref
+    const viewer = document.getElementById('code-viewer');
+    const code = viewer?.textContent || '';
+    if (code) {
+      navigator.clipboard.writeText(code);
+    }
+  }
+
   return (
     <div className="w-3/4 p-4 h-full flex flex-col">
       <div className="mb-2 flex items-center justify-between gap-4">
-        <h3 className="text-lg font-semibold">Code History for {file}</h3>
+        <h3 className="text-lg font-semibold">Code History for {file}
+          <button className='border border-gray-300 hover:bg-gray-200 cursor-pointer ml-2' onClick={
+            () => copyCurrentCode()
+          }>📄</button>
+        </h3>
         <label className="flex items-center gap-2 text-sm font-medium">
           Highlight
           <input

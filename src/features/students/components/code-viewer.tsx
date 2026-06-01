@@ -180,7 +180,7 @@ const CodeViewer = forwardRef<HTMLSpanElement, CodeViewerProps>(({ frame, onMeta
   };
 
   return (
-    <div className="font-mono text-sm whitespace-pre-wrap p-2 bg-white" style={{ lineHeight: 1.15 }} onMouseLeave={() => onHoverCharacterIndexChange?.(null)}>
+    <div id="code-viewer" className="font-mono text-sm whitespace-pre-wrap p-2 bg-white" style={{ lineHeight: 1.15 }} onMouseLeave={() => onHoverCharacterIndexChange?.(null)}>
       {renderSpans()}
     </div>
   );
