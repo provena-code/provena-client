@@ -84,6 +84,8 @@ export default function StudentFileViewer({ studentId, assignmentId }: StudentFi
     // }, [eventLogs, history]);
     const discontinuityIndices = history ? history.map((frame, index) => frame.hadDiscontinuity ? index : null).filter(v => v !== null) : [];
 
+    const uniqueSessionIDs = Array.from(new Set(eventLogs?.map(e => e.SessionID).filter(s => s != null) || []));
+
     const jumpToClientTime = (clientTime: number) => {
         if (!eventLogs || eventLogs.length === 0 || !history) return;
         const clientTimeToIsoString = new Date(clientTime).toISOString();
@@ -119,7 +121,7 @@ export default function StudentFileViewer({ studentId, assignmentId }: StudentFi
                     ) : (
                         <div className="p-4">No files found.</div>
                     )}
-                    <EventDetailViewer events={currentEvents} hadDiscontinuity={currentFrameData?.hadDiscontinuity} />
+                    <EventDetailViewer events={currentEvents} hadDiscontinuity={currentFrameData?.hadDiscontinuity} sessionIDs={uniqueSessionIDs} />
                     <ClipboardViewer clipboard={currentFrameData?.currentClipboard ?? ''} />
                     <MetadataViewer metadata={hoveredMetadata} />
                 </div>
