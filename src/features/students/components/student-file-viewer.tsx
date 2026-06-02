@@ -31,7 +31,7 @@ export default function StudentFileViewer({ studentId, assignmentId }: StudentFi
                 return DefaultService.getCodeStateSectionsForSubject(email!);
             }
         },
-        select: (data: string[]) => data.sort((a, b) => a.includes("test") ? 1 : a.localeCompare(b)),
+        select: (data: string[]) => data.sort((a, b) => a.includes("test") ? 1 : b.includes("test") ? -1 : a.localeCompare(b)),
         enabled: !!studentId,
     });
 

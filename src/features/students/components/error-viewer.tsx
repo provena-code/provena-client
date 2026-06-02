@@ -53,7 +53,7 @@ export default function ErrorViewer({ history, onJump }: ErrorViewerProps) {
                                             onJump(r.frameIndex);
                                         }}
                                     >
-                                        {r.frameIndex}
+                                        {r.frameIndex + 1}
                                     </a>
                                 </td>
                                 <td className="px-2 py-1">
