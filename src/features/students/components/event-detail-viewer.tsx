@@ -60,6 +60,9 @@ export default function EventDetailViewer({ events, hadDiscontinuity, sessionIDs
   if (anonEventData && anonEventData.Code) {
     anonEventData.Code = redactCode(anonEventData.Code);
   }
+  if (anonEventData && anonEventData.InsertText) {
+    anonEventData.InsertText = redactCode(anonEventData.InsertText);
+  }
 
   const displayEntries = anonEventData
     ? Object.entries(removeNulls(anonEventData as Record<string, unknown>))

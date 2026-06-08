@@ -60,7 +60,7 @@ export function findIndicesToRedact(code: string) : Set<number> {
     indicesToRedact.push(...findIndicesOfStrings(code, unityIDs));
 
     // Then find any lines that start with whitespace followed by any of:
-    const keywords = ['Author', 'Email', 'Class', 'Lab'].map(keyword => `${keyword}:`);
+    const keywords = ['Author', 'Name', 'Email', 'Class', 'Lab', 'Unity'].map(keyword => `${keyword}:`);
     const regex = new RegExp(`^[ \\t]*(${keywords.join('|')})`, 'gm');
 
     // And redact the whole line
@@ -69,7 +69,7 @@ export function findIndicesToRedact(code: string) : Set<number> {
         const lineStartIndex = match.index;
         const lineEndIndex = code.indexOf('\n', lineStartIndex + 1);
         // If there's no newline, redact to the end of the code
-        let endIndex = lineEndIndex !== -1 ? lineEndIndex : code.length;
+        const endIndex = lineEndIndex !== -1 ? lineEndIndex : code.length;
         // console.log(`Found match for redaction at index ${match.index}: ${match[0]} with length ${endIndex - lineStartIndex}`);
         for (let i = lineStartIndex; i < endIndex; i++) {
             indicesToRedact.push(i);
@@ -82,17 +82,16 @@ export function findIndicesToRedact(code: string) : Set<number> {
 
 function findIndicesOfStrings(code: string, toSearch: string[]) : number[] {
     const indices: number[] = [];
-    for (const email in emailToAnonIDMap) {
-        const anonID = emailToAnonIDMap[email];
+    for (const id of toSearch) {
         let startIndex = 0;
         while (true) {
-            const index = code.indexOf(email, startIndex);
+            const index = code.indexOf(id, startIndex);
             if (index === -1) break;
-            // Mark the range of the email for redaction
-            for (let i = index; i < index + email.length; i++) {
+            // Mark the range of the string for redaction
+            for (let i = index; i < index + id.length; i++) {
                 indices.push(i);
             }
-            startIndex = index + email.length;
+            startIndex = index + id.length;
         }
     }
     return indices;

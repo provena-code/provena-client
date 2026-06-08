@@ -2,6 +2,7 @@ import { PS2 } from 'provena';
 import CodeHistoryPlayer from './code-history-player';
 import { Metadata } from 'provena';
 import { useHighlightEnabled } from '@/lib/highlight-setting';
+import { redactCode } from '@/lib/anon';
 
 interface EventLogViewerProps {
   eventHistory: readonly PS2.EditHistoryFrame[];
@@ -21,7 +22,7 @@ export default function EventLogViewer({ eventHistory, file, onScrub, currentFra
     const viewer = document.getElementById('code-viewer');
     const code = viewer?.textContent || '';
     if (code) {
-      navigator.clipboard.writeText(code);
+      navigator.clipboard.writeText(redactCode(code));
     }
   }
 
