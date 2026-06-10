@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import { DefaultService, MainTableEvent } from '@/api';
 import FileList from '@/features/students/components/file-list';
 import EventLogViewer from '@/features/students/components/event-log-viewer';
@@ -8,47 +8,32 @@ import MetadataViewer from '@/features/students/components/metadata-viewer';
 import ErrorViewer from '@/features/students/components/error-viewer';
 import { Metadata, PS2 } from 'provena';
 import ClipboardViewer from './clipboard-viewer';
-import { getEmailFromAnonID } from '@/lib/anon';
+
+// interface StudentFileViewerProps {
+//     studentId: string;
+//     assignmentId?: string;
+//     timeRange?: { start: string, end: string};
+// }
+
+export type LogsAndHistory = {
+    eventLogs: MainTableEvent[];
+    history: readonly PS2.EditHistoryFrame[];
+};
 
 interface StudentFileViewerProps {
     studentId: string;
-    assignmentId?: string;
+    filesResult: UseQueryResult<string[]>;
+    eventFetcher: (file: string | null) => UseQueryResult<LogsAndHistory>;
 }
 
-export default function StudentFileViewer({ studentId, assignmentId }: StudentFileViewerProps) {
+export default function StudentFileViewer({ studentId, filesResult, eventFetcher }: StudentFileViewerProps) {
     const [selectedFile, setSelectedFile] = useState<string | null>(null);
     const [currentFrameIndex, setCurrentFrame] = useState<number | null>(null);
     const [hoveredMetadata, setHoveredMetadata] = useState<Metadata | null>(null);
 
-    const email = getEmailFromAnonID(studentId);
-
-    const { data: files, isLoading: isLoadingFiles, isError: isErrorFiles } = useQuery({
-        queryKey: ['files', assignmentId, studentId],
-        queryFn: () => {
-            if (assignmentId) {
-                return DefaultService.getCodeStateSectionsForAssignmentSubject(assignmentId, email!);
-            } else {
-                return DefaultService.getCodeStateSectionsForSubject(email!);
-            }
-        },
-        select: (data: string[]) => data.sort((a, b) => a.includes("test") ? 1 : b.includes("test") ? -1 : a.localeCompare(b)),
-        enabled: !!studentId,
-    });
-
-    const yielder = () => new Promise(resolve => setTimeout(resolve, 0)); // Yield to the event loop to keep UI responsive
-
-    const { data: logsAndHistory, isLoading: isLoadingEventLogs, isError: isErrorEventLogs } = useQuery({
-        queryKey: ['eventLogs', assignmentId, studentId, selectedFile],
-        queryFn: () => DefaultService.getFileEdits(email!, selectedFile!).then(async events => {
-            // console.log(`Fetched ${events.length} events for file ${selectedFile}`);
-            return {
-                eventLogs: events as MainTableEvent[],
-                history: await PS2.createEditHistoryAsync(events, yielder, { newLineMode: PS2.NewlineMode.AutoDetect })
-                // history: PS2.createEditHistory(events, { newLineMode: PS2.NewlineMode.AutoDetect })
-            };
-        }),
-        enabled: !!(studentId && selectedFile),
-    });
+    const { data: files, isLoading: isLoadingFiles, isError: isErrorFiles } = filesResult;
+    const logsAndHistoryResult = eventFetcher(selectedFile);
+    const { data: logsAndHistory, isLoading: isLoadingEventLogs, isError: isErrorEventLogs } = logsAndHistoryResult || {};
     const {eventLogs, history} = logsAndHistory || {};
 
     useEffect(() => {

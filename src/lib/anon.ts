@@ -31,7 +31,8 @@ export function isParticipantEmail(email: string) : boolean {
     return email in emailToAnonIDMap;
 }
 
-export function getEmailFromAnonID(anonID: string) : string | undefined {
+export function getEmailFromAnonID(anonID?: string) : string | undefined {
+    if (!anonID) return undefined;
     return anonIDToEmailMap[anonID] || undefined;
 }
 

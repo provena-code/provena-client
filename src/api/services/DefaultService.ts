@@ -139,19 +139,25 @@ export class DefaultService {
         });
     }
     /**
-     * Get All Edits
-     * @param assignmentId
+     * Get Student Edits
+     * @param subjectId SubjectID
+     * @param startClientTimestamp Start Client Timestamp
+     * @param endClientTimestamp End Client Timestamp
      * @returns any Successful Response
      * @throws ApiError
      */
-    public static getAllEditsReadAssignmentIdEditsGet(
-        assignmentId: string,
+    public static getEditsInRange(
+        subjectId: string,
+        startClientTimestamp: string,
+        endClientTimestamp: string,
     ): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/read/{assignment_id}/edits',
-            path: {
-                'assignment_id': assignmentId,
+            url: '/read/edits_in_range',
+            query: {
+                'subject_id': subjectId,
+                'start_client_timestamp': startClientTimestamp,
+                'end_client_timestamp': endClientTimestamp,
             },
             errors: {
                 422: `Validation Error`,
@@ -161,13 +167,15 @@ export class DefaultService {
     /**
      * Get Student Edits
      * @param subjectId SubjectID
-     * @param codestateSection CodestateSection
+     * @param codestateSection CodeStateSection
+     * @param lastCodestateId Last CodeStateID
      * @returns any Successful Response
      * @throws ApiError
      */
     public static getFileEdits(
         subjectId: string,
         codestateSection: string,
+        lastCodestateId?: string,
     ): CancelablePromise<any> {
         return __request(OpenAPI, {
             method: 'GET',
@@ -175,6 +183,7 @@ export class DefaultService {
             query: {
                 'subject_id': subjectId,
                 'codestate_section': codestateSection,
+                'last_codestate_id': lastCodestateId,
             },
             errors: {
                 422: `Validation Error`,

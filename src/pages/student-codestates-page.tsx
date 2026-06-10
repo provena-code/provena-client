@@ -1,12 +1,12 @@
 import { useParams } from 'react-router-dom';
-import StudentFileViewer from '@/features/students/components/student-file-viewer';
+import { StudentFilesFetcher } from '@/features/students/components/student-files-fetcher';
 
 export default function StudentCodeStatesPage() {
     const { studentId } = useParams<{ studentId: string }>();
 
     return (
         <div>
-            {studentId && <StudentFileViewer studentId={studentId} />}
+            {studentId && <StudentFilesFetcher studentId={studentId} />}
         </div>
     );
 }
