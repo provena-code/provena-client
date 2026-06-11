@@ -107,7 +107,7 @@ export default function EventDetailViewer({ events, hadDiscontinuity, sessionIDs
       </h3>
 
       {anonEventData ? (
-        <div className="min-h-65 overflow-auto">
+        <div className="h-100 overflow-auto">
           <div className="grid grid-cols-1">
             {sortedEntries.map(([key, value]) => (
               <div key={key} className="bg-white px-1 py-0.5">
