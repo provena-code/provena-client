@@ -5,6 +5,7 @@ import HomePage from '@/pages/home-page';
 import StudentCodeStatesPage from '@/pages/student-codestates-page';
 import StudentDetailPage from '@/pages/student-detail-page';
 import AssignmentDetailPage from './pages/assignment-detail-page';
+import StudentTimeRangePage from './pages/student-time-page';
 
 // Nested route definitions. Using nesting ensures `matchRoutes` returns
 // an array with both the assignment and student matches for
@@ -43,8 +44,15 @@ export const appRoutes: RouteObject[] = [
         children: [
           {
             path: ':studentId',
-            element: <StudentCodeStatesPage />,
             handle: { crumb: (params: Record<string, string>) => `Student ${params.studentId}` },
+            children: [
+              { index: true, element: <StudentCodeStatesPage /> },
+              {
+                path: 'range/:range',
+                element: <StudentTimeRangePage />,
+                handle: { crumb: (params: Record<string, string>) => `Time Range ${params.range}` },
+              }
+            ]
           },
         ],
       },

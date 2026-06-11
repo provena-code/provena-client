@@ -49,7 +49,12 @@ export function StudentTimeRangeFetcher({ studentId, startTime, endTime }: Stude
 
     const eventFetcher = (selectedFile: string | null) => useQuery({
         queryKey: ['eventsForFileInRange', studentId, selectedFile, startTime, endTime],
-        queryFn: () => events,
+        queryFn: () => {
+            return {
+                history: builder!.builderMap.get(selectedFile!)?.getHistory(),
+                eventLogs: events
+            } as LogsAndHistory;
+        },
         enabled: !!(selectedFile && events),
     });
 

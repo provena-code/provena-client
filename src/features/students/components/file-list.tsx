@@ -9,7 +9,7 @@ export default function FileList({ files, selectedFile, onSelectFile }: FileList
   return (
     <div className="border-r border-gray-300 p-4">
       <h3 className="text-lg font-semibold mb-2">Files</h3>
-      <ul>
+      <ul className="overflow-y-auto max-h-100">
         {files.map((file) => (
           <li
             key={file}

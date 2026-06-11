@@ -223,6 +223,26 @@ export class DefaultService {
         });
     }
     /**
+     * Get Client Timestamp Range For Subject
+     * @param subjectId
+     * @returns any Successful Response
+     * @throws ApiError
+     */
+    public static getClientTimestampRangeForSubject(
+        subjectId: string,
+    ): CancelablePromise<any> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/read/subjects/{subject_id}/time_range',
+            path: {
+                'subject_id': subjectId,
+            },
+            errors: {
+                422: `Validation Error`,
+            },
+        });
+    }
+    /**
      * Get Codestates For Subject
      * @param subjectId
      * @returns any Successful Response
