@@ -116,7 +116,8 @@ export default function CodeHistoryPlayer({ codeHistory, onScrub, onMetadataHove
     }
   };
 
-  const currentFrameData = codeHistory[currentFrame];
+  const boundedFrame = Math.max(0, Math.min(currentFrame, codeHistory.length - 1));
+  const currentFrameData = codeHistory[boundedFrame];
 
   const showErrorBorder = currentFrameData && !currentFrameData.isInternallyConsistent;
 

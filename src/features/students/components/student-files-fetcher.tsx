@@ -42,8 +42,6 @@ export function StudentFilesFetcher({ studentId, assignmentId }: StudentFilesFet
         enabled: !!(studentId && selectedFile),
     });
 
-    console.log('files', files);
-
     return (
         <div>
             {<StudentFileViewer studentId={studentId} filesResult={files} eventFetcher={eventFetcher} />}
