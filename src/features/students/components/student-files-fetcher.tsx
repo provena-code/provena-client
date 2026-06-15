@@ -28,13 +28,14 @@ export function StudentFilesFetcher({ studentId, assignmentId }: StudentFilesFet
 
     const yielder = () => new Promise(resolve => setTimeout(resolve, 0)); // Yield to the event loop to keep UI responsive
 
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const eventFetcher = (selectedFile: string | null) => useQuery({
         queryKey: ['eventLogs', assignmentId, studentId, selectedFile],
         queryFn: () => DefaultService.getFileEdits(email!, selectedFile!).then(async events => {
             // console.log(`Fetched ${events.length} events for file ${selectedFile}`);
             const result: LogsAndHistory = {
                 eventLogs: events as MainTableEvent[],
-                history: await PS2.createEditHistoryAsync(events, yielder, { newLineMode: PS2.NewlineMode.AutoDetect })
+                builder: await PS2.createEditHistoryAsync(events, yielder, { newLineMode: PS2.NewlineMode.AutoDetect })
                 // history: PS2.createEditHistory(events, { newLineMode: PS2.NewlineMode.AutoDetect })
             };
             return result;

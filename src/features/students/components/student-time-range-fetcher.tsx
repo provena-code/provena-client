@@ -1,8 +1,7 @@
+import { DefaultService } from '@/api/services/DefaultService';
 import StudentFileViewer, { LogsAndHistory } from '@/features/students/components/student-file-viewer';
 import { getEmailFromAnonID } from '@/lib/anon';
 import { useQuery } from '@tanstack/react-query';
-import { DefaultService } from '@/api/services/DefaultService';
-import { MainTableEvent } from '@/api';
 import { PS2 } from 'provena';
 
 export type StudentTimeRangeFetcherProps = {
@@ -47,11 +46,12 @@ export function StudentTimeRangeFetcher({ studentId, startTime, endTime }: Stude
         enabled: !!(builder),
     });
 
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const eventFetcher = (selectedFile: string | null) => useQuery({
         queryKey: ['eventsForFileInRange', studentId, selectedFile, startTime, endTime],
         queryFn: () => {
             return {
-                history: builder!.builderMap.get(selectedFile!)?.getHistory(),
+                builder: builder!.builderMap.get(selectedFile!),
                 eventLogs: events
             } as LogsAndHistory;
         },

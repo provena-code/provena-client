@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useQuery, UseQueryResult } from '@tanstack/react-query';
-import { DefaultService, MainTableEvent } from '@/api';
+import { UseQueryResult } from '@tanstack/react-query';
+import { MainTableEvent } from '@/api';
 import FileList from '@/features/students/components/file-list';
 import EventLogViewer from '@/features/students/components/event-log-viewer';
 import EventDetailViewer from '@/features/students/components/event-detail-viewer';
@@ -17,7 +17,7 @@ import ClipboardViewer from './clipboard-viewer';
 
 export type LogsAndHistory = {
     eventLogs: MainTableEvent[];
-    history: readonly PS2.EditHistoryFrame[];
+    builder: PS2.Builder;
 };
 
 interface StudentFileViewerProps {
@@ -26,7 +26,7 @@ interface StudentFileViewerProps {
     eventFetcher: (file: string | null) => UseQueryResult<LogsAndHistory>;
 }
 
-export default function StudentFileViewer({ studentId, filesResult, eventFetcher }: StudentFileViewerProps) {
+export default function StudentFileViewer({ filesResult, eventFetcher }: StudentFileViewerProps) {
     const [selectedFile, setSelectedFile] = useState<string | null>(null);
     const [currentFrameIndex, setCurrentFrame] = useState<number | null>(null);
     const [hoveredMetadata, setHoveredMetadata] = useState<Metadata | null>(null);
@@ -34,7 +34,12 @@ export default function StudentFileViewer({ studentId, filesResult, eventFetcher
     const { data: files, isLoading: isLoadingFiles, isError: isErrorFiles } = filesResult;
     const logsAndHistoryResult = eventFetcher(selectedFile);
     const { data: logsAndHistory, isLoading: isLoadingEventLogs, isError: isErrorEventLogs } = logsAndHistoryResult || {};
-    const {eventLogs, history} = logsAndHistory || {};
+    const {eventLogs, builder} = logsAndHistory || {};
+    const history = builder ? builder.getHistory() : null;
+
+    if (builder) {
+        console.log('Calculated Metrics:', builder.calculateMetrics());
+    }
 
     useEffect(() => {
         if (files && Array.isArray(files) && files.length > 0 && !selectedFile) {
