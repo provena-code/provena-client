@@ -37,9 +37,10 @@ export default function StudentFileViewer({ filesResult, eventFetcher }: Student
     const {eventLogs, builder} = logsAndHistory || {};
     const history = builder ? builder.getHistory() : null;
 
-    if (builder) {
-        console.log('Calculated Metrics:', builder.calculateMetrics());
-    }
+    // TODO: Display them somewhere
+    // if (builder) {
+    //     console.log('Calculated Metrics:', builder.calculateMetrics());
+    // }
 
     useEffect(() => {
         if (files && Array.isArray(files) && files.length > 0 && !selectedFile) {
