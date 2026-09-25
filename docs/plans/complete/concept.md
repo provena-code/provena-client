@@ -1,6 +1,8 @@
 
 # 🧠 Coding Agent Context and Guidelines
 
+This document describes the initial concept for this project. It lays out some general principles, but it may be out of date. Parts of it are known to be stale: MSW, Prettier, and the `features/assignments` / `files` folders don't exist, and the default API port is 8001, not 8000.
+
 **Project:** Teacher Dashboard Frontend (Prototype)
 **Goal:** A React-based frontend prototype for instructors to explore student programming activity and code evolution.
 
