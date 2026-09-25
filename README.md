@@ -1,6 +1,6 @@
 # provena-client
 
-An instructor-facing dashboard for browsing and replaying students' programming work. It shows logs collected by the [Provena VSCode plugin](https://github.com/thomaswp/provena-vscode) and stored by the [provena-server](https://github.com/thomaswp/provena-server).
+An instructor-facing dashboard for browsing and replaying students' programming work. It shows logs collected by the [Provena VSCode plugin](https://github.com/provena-code/provena-vscode) and stored by the [provena-server](https://github.com/provena-code/provena-server).
 
 For any file a student worked on, you can replay its full edit history. You can also see which parts of the code the student typed, which were pasted from outside the editor, and which were generated or edited by other tools.
 
@@ -8,15 +8,15 @@ For any file a student worked on, you can replay its full edit history. You can 
 
 ### Prerequisites
 
-* A running [provena-server](https://github.com/thomaswp/provena-server). Follow the setup instructions in its README.
+* A running [provena-server](https://github.com/provena-code/provena-server). Follow the setup instructions in its README.
 * [Node.js](https://nodejs.org/) and npm.
 
 ### Install
 
-The project depends on [provena-core](https://github.com/thomaswp/provena-core), which is included as a git submodule. Clone with submodules:
+The project depends on [provena-core](https://github.com/provena-code/provena-core), which is included as a git submodule. Clone with submodules:
 
 ```sh
-git clone --recurse-submodules https://github.com/thomaswp/provena-client.git
+git clone --recurse-submodules https://github.com/provena-code/provena-client.git
 cd provena-client
 npm install
 ```
@@ -136,3 +136,20 @@ Provena tries to work out the origin of every character in a student's code, but
 ### Performance
 
 The dashboard processes logs in your browser, so large logs can take a while to load (around 10 seconds). Loading may slow down or pause if the browser window isn't focused.
+
+## Citing Provena
+
+To cite Provena, please cite:
+
+Price, T.W., Titus, K., Jiao, S. & and Tran, K. (2026, November). "Beyond Copy-Paste: Detecting and Understanding Students’ Use of Unauthorized Aid when Monitored." In Proceedings of the 26th Koli Calling International Conference on Computing Education Research (pp. 1-12).
+
+
+```
+@inproceedings{price2026beyond,
+  title={Beyond Copy-Paste: Detecting and Understanding Students’ Use of Unauthorized Aid when Monitored},
+  author={Price, Thomas W. and Titus, Kim and Jiao, Shuyin and Tran, Keith},
+  booktitle={Proceedings of the 26th Koli Calling International Conference on Computing Education Research},
+  pages={1--12},
+  year={2026}
+}
+```
