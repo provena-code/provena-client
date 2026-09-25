@@ -1,4 +1,4 @@
-import { findIndicesToRedact } from '@/lib/anon';
+import { CodeRedactionPlaceholder, findIndicesToRedact } from '@/lib/anon';
 import { useHighlightEnabled } from '@/lib/highlight-setting';
 import { Author, PS2, Metadata } from 'provena';
 import { forwardRef, useEffect, useState } from 'react';
@@ -122,7 +122,7 @@ const CodeViewer = forwardRef<HTMLSpanElement, CodeViewerProps>(({ frame, onMeta
 
       let redactedText = edit.text;
       for (const redactIndex of localRedactedIndices[index]) {
-        redactedText = redactedText.substring(0, redactIndex) + '█' + redactedText.substring(redactIndex + 1);
+        redactedText = redactedText.substring(0, redactIndex) + CodeRedactionPlaceholder + redactedText.substring(redactIndex + 1);
       }
 
       const spanProps = {

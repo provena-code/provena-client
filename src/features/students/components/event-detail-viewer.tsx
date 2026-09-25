@@ -56,13 +56,13 @@ export default function EventDetailViewer({ events, hadDiscontinuity, sessionIDs
   const total = events?.length ?? 0;
   const current = total > 0 ? events[index] : undefined;
 
-  const anonEventData = current ? anonymizeObject(current) : null;
-  if (anonEventData && anonEventData.Code) {
-    anonEventData.Code = redactCode(anonEventData.Code);
-  }
-  if (anonEventData && anonEventData.InsertText) {
-    anonEventData.InsertText = redactCode(anonEventData.InsertText);
-  }
+  // Redact every string field (Code, InsertText, DeleteText, CopiedText, paths, program output, etc.)
+  const anonymized = current ? anonymizeObject(current) : undefined;
+  const anonEventData = anonymized
+    ? Object.fromEntries(Object.entries(anonymized).map(
+        ([key, value]) => [key, typeof value === 'string' ? redactCode(value) : value]
+      )) as typeof anonymized
+    : null;
 
   const displayEntries = anonEventData
     ? Object.entries(removeNulls(anonEventData as Record<string, unknown>))

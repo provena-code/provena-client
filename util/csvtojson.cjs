@@ -8,13 +8,14 @@ if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir);
 }
 
-// Replace these with your actual file paths
+// Note: this is a simple parser; values can't contain commas or quotes
 const csvFilePath = path.join(dataDir, 'crosswalk.csv');
 const jsonFilePath = path.join(dataDir, 'crosswalk.json');
 
 try {
   // Read CSV file
-  const csvData = fs.readFileSync(csvFilePath, 'utf8');
+  // Strip the UTF-8 BOM that Excel adds, so the first header isn't mangled
+  const csvData = fs.readFileSync(csvFilePath, 'utf8').replace(/^﻿/, '');
 
   // Split into rows and remove empty lines
   const rows = csvData.split('\n').map(row => row.trim()).filter(row => row);
@@ -38,4 +39,5 @@ try {
 
 } catch (error) {
   console.error('Error converting file:', error.message);
+  process.exitCode = 1;
 }

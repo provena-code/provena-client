@@ -28,11 +28,15 @@ Instructor-facing React dashboard for browsing and replaying student coding logs
   - Ctrl/Cmd+click on code jumps to that span's creation time (`jumpToClientTime`).
   - Red slider ticks mark `hadDiscontinuity` frames. The viewer border is red when a frame is not `isInternallyConsistent`.
 
-## Anonymization (study-specific)
+## Anonymization (optional)
 
-`src/lib/anon.ts` imports `src/data/crosswalk.json` (gitignored, with fields `UnityID`, `Email`, `AnonID`). Generate it from `src/data/crosswalk.csv` with `node util/csvtojson.cjs`. The build fails without this file.
+`src/lib/anon.ts` optionally loads `src/data/crosswalk.json` via `import.meta.glob`. The file is gitignored. It's generated from `src/data/crosswalk.csv` by `npm run crosswalk` (`util/csvtojson.cjs`). It's a stopgap until the server owns the crosswalk. See `docs/plans/anonymization.md` for the design and known limitations.
 
-- The server uses emails as SubjectIDs, and the UI shows AnonIDs instead. Students who aren't in the crosswalk are filtered out entirely.
-- Fetchers convert AnonIDs back to emails (`getEmailFromAnonID`) before making API calls.
-- Displayed code, event data, and clipboard contents pass through `redactCode`, which blanks crosswalk emails, UnityIDs, and header lines such as `Name:`, `Email:`, and `Author:`.
+- **Without the file**, `isAnonymizationEnabled` is false and every function passes its input through: raw SubjectIDs, no filtering, no redaction.
+- **With the file:**
+  - Required columns are `SubjectID` and `AnonID`. The file is validated at load and throws on missing values or duplicate AnonIDs.
+  - The UI shows AnonIDs, and subjects who aren't in the crosswalk are filtered out.
+  - Fetchers convert the URL's ID back with `getSubjectIDFromAnonID` before making API calls.
+- **Redaction:** `redactCode` / `findIndicesToRedact` blank every value from every column except `AnonID`. Matching is case-insensitive, uses values from all rows, and skips values under 3 characters. They also blank header lines (`Author:`, `Name:`, `Email:`, `Class:`, `Lab:`). This applies to code, clipboard contents, and every string field in Event Details. File names in the file list are *not* redacted.
+- The crosswalk is inlined into the bundle, so a build that includes one must stay local.
 - The crosswalk contains real student data. Never commit it or print its contents.

@@ -1,5 +1,5 @@
 import { DefaultService } from "@/api";
-import { getEmailFromAnonID } from "@/lib/anon";
+import { getSubjectIDFromAnonID } from "@/lib/anon";
 import { useQuery } from "@tanstack/react-query";
 
 interface TimeRangeSelectorProps {
@@ -14,7 +14,7 @@ export default function TimeRangeSelector({ subjectId }: TimeRangeSelectorProps)
 
     const { data, isLoading, isError } = useQuery({
         queryKey: ['timeRange', subjectId],
-        queryFn: () => DefaultService.getClientTimestampRangeForSubject(getEmailFromAnonID(subjectId)!),
+        queryFn: () => DefaultService.getClientTimestampRangeForSubject(getSubjectIDFromAnonID(subjectId)!),
         enabled: !!subjectId,
     });
 
@@ -65,7 +65,7 @@ export default function TimeRangeSelector({ subjectId }: TimeRangeSelectorProps)
                         const endTime = (document.getElementById('end-time') as HTMLInputElement).value;
                         if (startTime && endTime) {
                             const range = `${new Date(startTime).toISOString()}...${new Date(endTime).toISOString()}`;
-                            window.location.href = `/student/${subjectId}/range/${range}`;
+                            window.location.href = `/student/${encodeURIComponent(subjectId)}/range/${range}`;
                         }
                     }}
                 >

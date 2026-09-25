@@ -32,7 +32,7 @@ const makeColumns = (assignmentId: string): ColumnDef<StudentSummary, any>[] => 
         cell: ({ row }) => {
             return (
                 <Link
-                    to={`/assignment/${assignmentId}/student/${row.original.SubjectID}`}
+                    to={`/assignment/${assignmentId}/student/${encodeURIComponent(row.original.SubjectID)}`}
                     className="text-blue-500 hover:underline"
                 >
                     {row.original.SubjectID}

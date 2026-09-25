@@ -1,5 +1,5 @@
 import StudentFileViewer, { LogsAndHistory } from '@/features/students/components/student-file-viewer';
-import { getEmailFromAnonID } from '@/lib/anon';
+import { getSubjectIDFromAnonID } from '@/lib/anon';
 import { useQuery } from '@tanstack/react-query';
 import { DefaultService } from '@/api/services/DefaultService';
 import { MainTableEvent } from '@/api';
@@ -11,15 +11,15 @@ export type StudentFilesFetcherProps = {
 }
 
 export function StudentFilesFetcher({ studentId, assignmentId }: StudentFilesFetcherProps) {
-    const email = getEmailFromAnonID(studentId);
+    const subjectId = getSubjectIDFromAnonID(studentId);
 
     const files = useQuery({
         queryKey: ['files', assignmentId, studentId],
         queryFn: () => {
             if (assignmentId) {
-                return DefaultService.getCodeStateSectionsForAssignmentSubject(assignmentId, email!);
+                return DefaultService.getCodeStateSectionsForAssignmentSubject(assignmentId, subjectId!);
             } else {
-                return DefaultService.getCodeStateSectionsForSubject(email!);
+                return DefaultService.getCodeStateSectionsForSubject(subjectId!);
             }
         },
         select: (data: string[]) => data.sort((a, b) => a.includes("test") ? 1 : b.includes("test") ? -1 : a.localeCompare(b)),
@@ -31,7 +31,7 @@ export function StudentFilesFetcher({ studentId, assignmentId }: StudentFilesFet
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const eventFetcher = (selectedFile: string | null) => useQuery({
         queryKey: ['eventLogs', assignmentId, studentId, selectedFile],
-        queryFn: () => DefaultService.getFileEdits(email!, selectedFile!).then(async events => {
+        queryFn: () => DefaultService.getFileEdits(subjectId!, selectedFile!).then(async events => {
             // console.log(`Fetched ${events.length} events for file ${selectedFile}`);
             const result: LogsAndHistory = {
                 eventLogs: events as MainTableEvent[],

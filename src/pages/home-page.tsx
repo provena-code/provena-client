@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { DefaultService } from '@/api';
 import { Link } from 'react-router-dom';
-import { anonymizeEmail } from '@/lib/anon';
+import { anonymizeSubjectID } from '@/lib/anon';
 
 export default function HomePage() {
   const { data: assignments, isLoading: isLoadingAssignments, isError: isErrorAssignments } = useQuery({
@@ -12,7 +12,7 @@ export default function HomePage() {
   const { data: students, isLoading: isLoadingStudents, isError: isErrorStudents } = useQuery({
     queryKey: ['students'],
     queryFn: () => DefaultService.getSubjectIDs(),
-    select: (data: string[]) => data.map(anonymizeEmail).filter((id): id is string => !!id).sort(),
+    select: (data: string[]) => data.map(anonymizeSubjectID).filter((id): id is string => !!id).sort(),
   });
 
   return (
@@ -36,7 +36,7 @@ export default function HomePage() {
       <ul className="mt-2">
         {Array.isArray(students) && students.map((id: string) => (
           <li key={id}>
-            <Link to={`/student/${id}`} className="text-blue-500 hover:underline">
+            <Link to={`/student/${encodeURIComponent(id)}`} className="text-blue-500 hover:underline">
               {id}
             </Link>
           </li>

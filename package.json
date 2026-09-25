@@ -8,6 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
+    "crosswalk": "node util/csvtojson.cjs",
     "gen": "npx openapi-typescript-codegen --input http://127.0.0.1:8001/openapi.json --output ./src/api --client axios"
   },
   "dependencies": {

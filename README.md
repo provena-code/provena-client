@@ -48,6 +48,45 @@ npm run build
 
 This writes a static site to `dist/`, which you can serve with any web server. Values from `.env` are baked in at build time, so set `VITE_APP_BASE_PATH` to match where the site will be hosted **before** you build.
 
+### Anonymizing students (optional)
+
+By default, the dashboard shows each student's SubjectID as it's stored on the server (for example, their email). To show anonymous IDs instead, and to blank out identifying information in students' code, add a crosswalk. This is mostly intended for research purposes. **Note**: A more robust sepratetion of identifiers from research data is planned in the server, but not yet implemented.
+
+> [!WARNING]
+> The crosswalk is compiled into the site, so anyone who can load the site can read it. Only use a crosswalk when running the dashboard **locally** (`npm run dev`). Never deploy or share a build made with a crosswalk, and never commit the crosswalk. Also note that anonymization only affects what the dashboard displays. The server still sends real SubjectIDs to the browser.
+
+1. Create `src/data/crosswalk.csv`. The `src/data` folder is gitignored. The first row must be a header that includes these two columns:
+
+   | Column | Meaning |
+   | --- | --- |
+   | `SubjectID` | The student's ID as stored on the server. |
+   | `AnonID` | The ID to show in the dashboard. Must be unique. |
+
+   Any other columns, such as a username or student number, are treated as identifying information. So is `SubjectID`. Wherever one of these values appears in a student's code, clipboard, or logged events, it's blanked out (█). Matching ignores case and includes matches from every student's row, not just the student you're viewing. So only include identifiers that are unique strings, like usernames or emails. Don't include names or other common words. Values shorter than 3 characters are ignored.
+
+   ```csv
+   SubjectID,AnonID,Username
+   student1@example.edu,S001,student1
+   student2@example.edu,S002,student2
+   ```
+
+   Values can't contain commas or quotes.
+
+2. Convert the CSV to JSON:
+
+   ```sh
+   npm run crosswalk
+   ```
+
+3. Restart `npm run dev`.
+
+When a crosswalk is in use:
+
+* Students who aren't listed in it are hidden.
+* Any line in a student's code that begins with `Author:`, `Name:`, `Email:`, `Class:`, or `Lab:` is blanked out entirely.
+
+To turn anonymization off, delete `src/data/crosswalk.json` and restart.
+
 ## Using the dashboard
 
 ### Logging in

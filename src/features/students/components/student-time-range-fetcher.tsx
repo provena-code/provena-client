@@ -1,6 +1,6 @@
 import { DefaultService } from '@/api/services/DefaultService';
 import StudentFileViewer, { LogsAndHistory } from '@/features/students/components/student-file-viewer';
-import { getEmailFromAnonID } from '@/lib/anon';
+import { getSubjectIDFromAnonID } from '@/lib/anon';
 import { useQuery } from '@tanstack/react-query';
 import { PS2 } from 'provena';
 
@@ -11,7 +11,7 @@ export type StudentTimeRangeFetcherProps = {
 }
 
 export function StudentTimeRangeFetcher({ studentId, startTime, endTime }: StudentTimeRangeFetcherProps) {
-    const email = getEmailFromAnonID(studentId);
+    const subjectId = getSubjectIDFromAnonID(studentId);
 
     const yielder = () => new Promise(resolve => setTimeout(resolve, 0)); // Yield to the event loop to keep UI responsive
 
@@ -19,7 +19,7 @@ export function StudentTimeRangeFetcher({ studentId, startTime, endTime }: Stude
     // so I'm not sure the best way to handle that...
     const {data, isLoading, isError} = useQuery({
         queryKey: ['eventLogsRange', studentId, startTime, endTime],
-        queryFn: () => DefaultService.getEditsInRange(email!, startTime, endTime).then(async events => {
+        queryFn: () => DefaultService.getEditsInRange(subjectId!, startTime, endTime).then(async events => {
             // TODO: Make an async version
             const builder = new PS2.MultiFileBuilder({
                 addHistory: true,
