@@ -32,6 +32,12 @@ Copy `.env.template` to `.env` and set:
 | `VITE_API_URL` | Root URL of your provena-server, e.g. `http://127.0.0.1:8001`. |
 | `VITE_APP_BASE_PATH` | Path the client is served from, e.g. `/provena/`. Defaults to `/`. You can leave it as `/` for local development. |
 
+### Logging in
+
+Instructors sign in through the server, which uses whatever login backend is configured in its `auth_config.yaml` (Google, for example). For this to work, the origin the client is served from has to be in the server's `redirect_allowlist`. The defaults already allow `http://localhost:*` and `http://127.0.0.1:*`, so `npm run dev` works without changes. A deployed client needs its own origin added, e.g. `https://your-host.example.edu`.
+
+You can also log in with an API key from the server's `roles.instructor.api_keys`, under "Use an API key instead" on the login page.
+
 ### Run locally
 
 ```sh

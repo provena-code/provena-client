@@ -6,11 +6,16 @@ import StudentCodeStatesPage from '@/pages/student-codestates-page';
 import StudentDetailPage from '@/pages/student-detail-page';
 import AssignmentDetailPage from './pages/assignment-detail-page';
 import StudentTimeRangePage from './pages/student-time-page';
+import LoginPage from '@/pages/login-page';
+import AuthCallbackPage from '@/pages/auth-callback-page';
 
 // Nested route definitions. Using nesting ensures `matchRoutes` returns
 // an array with both the assignment and student matches for
 // `/assignment/:assignmentId/student/:studentId` so breadcrumbs can show both.
 export const appRoutes: RouteObject[] = [
+  // Public routes, outside the protected App layout
+  { path: '/login', element: <LoginPage /> },
+  { path: '/auth/callback', element: <AuthCallbackPage /> },
   {
     path: '/',
     element: <App />,
