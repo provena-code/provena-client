@@ -1,5 +1,25 @@
 @import "tailwindcss";
 
+/* Colors used by the shadcn components in src/components/ui (bg-primary,
+   bg-background, text-muted-foreground, ...). Without these, those classes
+   generate nothing and buttons and dialogs render transparent. */
+@theme {
+  --color-background: #ffffff;
+  --color-foreground: #0f172a;
+  --color-primary: #0f172a;
+  --color-primary-foreground: #f8fafc;
+  --color-secondary: #f1f5f9;
+  --color-secondary-foreground: #0f172a;
+  --color-muted: #f1f5f9;
+  --color-muted-foreground: #64748b;
+  --color-accent: #f1f5f9;
+  --color-accent-foreground: #0f172a;
+  --color-destructive: #dc2626;
+  --color-destructive-foreground: #f8fafc;
+  --color-input: #e2e8f0;
+  --color-ring: #94a3b8;
+}
+
 @keyframes fade-bg-color {
   from {
     background-color: rgb(255, 239, 58);

@@ -14,10 +14,11 @@ Instructor-facing React dashboard for browsing and replaying student coding logs
 
 - **`core/`** is the `provena-core` git submodule, consumed as `"provena": "file:core"`. Its `main` points directly at `src/index.ts`, so there's no build step. It provides `PS2.Builder`, which turns ProgSnap2-style event logs into `EditHistoryFrame[]` (code, per-character authorship `Metadata`, clipboard, `errors`, `hadDiscontinuity`, `isInternallyConsistent`). Treat it as read-only from this repo. It is co-developed separately.
 - **All history reconstruction happens client-side** in the browser, which is why large logs are slow. Metrics exist (`builder.calculateMetrics()`) but aren't displayed yet (commented TODO in `student-file-viewer.tsx`).
-- **Auth**: the user enters an API key in `ApiKeyModal`. It's verified by calling `getAssignmentIDs`, stored in localStorage as `provena-api-key`, and sent as the `X-API-KEY` header via `OpenAPI.HEADERS` (`src/App.tsx`). SSO is planned.
+- **Auth** (`src/lib/auth.ts`, design in `docs/plans/login-ui.md`): `/login` offers server login (`/auth/login` OAuth redirect, token returned in the URL fragment to `/auth/callback`, `state` checked against sessionStorage) or an API key, which is verified by calling `getAssignmentIDs`. The credential is stored in localStorage as `provena-auth` and applied to `OpenAPI.TOKEN` (Bearer) or `OpenAPI.HEADERS` (`X-API-Key`) when the module is imported, before the first render. `App` is the protected layout and redirects to `/login` when there's no credential. The React Query error handler (`src/lib/query-client.ts`) turns a 401 or 403 into `AuthProblemDialog`, whose only action is to log out. Changing the credential clears the query cache.
 - **Env** (`src/main.tsx`, `vite.config.ts`): `VITE_API_URL` sets `OpenAPI.BASE` (falls back to `http://127.0.0.1:8001`). `VITE_APP_BASE_PATH` sets both Vite `base` and the router `basename`. Both are build-time values.
-- **React Query**: `refetchOnWindowFocus: false`. `staleTime` is 0 in dev and Infinity in prod.
+- **React Query** (`src/lib/query-client.ts`): `refetchOnWindowFocus: false`, no retries on 401/403. `staleTime` is 0 in dev and Infinity in prod.
 - **Routes** (`src/routes.tsx`, nested so breadcrumbs show every level):
+  - `/login` and `/auth/callback` are public, outside the `App` layout
   - `/` lists assignments and students
   - `/assignment/:assignmentId` shows the students table (Student, Last Submission Time, MaxScore)
   - `/assignment/:assignmentId/student/:studentId` shows that student's files for the assignment
